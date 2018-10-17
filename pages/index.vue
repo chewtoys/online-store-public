@@ -84,7 +84,7 @@ export default {
     }
   },
   mounted() {
-    this.$axios.get("/values").then(({ data }) => console.log(data));
+    // this.$axios.get("/values").then(({ data }) => console.log(data));
     this.$axios.auth("admin", "111111").then(({ data }) => console.log(data));
   }
 };
