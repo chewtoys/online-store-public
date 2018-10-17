@@ -67,24 +67,25 @@
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-        lorem: `Lorem ipsum dolor sit amet, mel at clita quando. Te sit oratio vituperatoribus, nam ad ipsum posidonium mediocritatem, explicari dissentiunt cu mea. Repudiare disputationi vim in, mollis iriure nec cu, alienum argumentum ius ad. Pri eu justo aeque torquatos.`
-      }
-    },
-    computed: {
-      counter() {
-        return this.$store.state.counter
-      }
-    },
-    methods:{
-      inc(){
-        this.$store.commit('inc')
-      }
-    },
-    mounted() {
-      this.$axios.get('/values').then(({data}) => console.log(data));
-    },
+export default {
+  data() {
+    return {
+      lorem: `Lorem ipsum dolor sit amet, mel at clita quando. Te sit oratio vituperatoribus, nam ad ipsum posidonium mediocritatem, explicari dissentiunt cu mea. Repudiare disputationi vim in, mollis iriure nec cu, alienum argumentum ius ad. Pri eu justo aeque torquatos.`
+    };
+  },
+  computed: {
+    counter() {
+      return this.$store.state.counter;
+    }
+  },
+  methods: {
+    inc() {
+      this.$store.commit("inc");
+    }
+  },
+  mounted() {
+    this.$axios.get("/values").then(({ data }) => console.log(data));
+    this.$axios.auth("admin", "111111").then(({ data }) => console.log(data));
   }
+};
 </script>
