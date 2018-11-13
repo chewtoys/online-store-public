@@ -85,9 +85,6 @@ export default {
       this.$store.commit("inc");
     }
   },
-  mounted() {
-    // this.$axios.get("/values").then(({ data }) => console.log(data));
-    this.$axios.auth("admin", "111111").then(({ data }) => console.log(data));
-  }
+  mounted() {}
 };
 </script>

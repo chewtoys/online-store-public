@@ -31,10 +31,15 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       
-      <v-btn icon @click="showAuth = true">
+      <v-btn icon @click="showAuth = true" v-if="!authData.authenticated">
         <v-icon>account_circle</v-icon>
       </v-btn>
-      <auth-form :show="showAuth" v-on:close="showAuth = false" v-on:save="showAuth = false" />
+      <span v-if="authData.authenticated">{{authData.username}}</span>
+      <v-btn icon @click="logout" v-if="authData.authenticated">
+        <v-icon>exit_to_app</v-icon>
+      </v-btn>
+      <auth-form :show="showAuth" v-on:close="showAuth = false" />
+      
     </v-toolbar>
     <v-content>
       <v-container>
@@ -56,6 +61,20 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
+    <v-snackbar
+      v-model="snackbar.show"
+      :bottom="true"
+      :multi-line="false"
+      :timeout="snackbar.timeout">
+      {{ snackbar.message }}
+      <v-btn
+        :color="snackbar.btnColor"
+        flat
+        @click="hideSnackbar"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
     <v-footer :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
@@ -67,6 +86,22 @@ import AuthForm from "~/Components/AuthForm";
 export default {
   components: {
     AuthForm
+  },
+  computed: {
+    snackbar: function() {
+      return this.$store.state.snackbar;
+    },
+    authData: function() {
+      return this.$store.state.account;
+    }
+  },
+  methods: {
+    hideSnackbar: function() {
+      this.$store.commit("snackbar/close");
+    },
+    logout: function() {
+      this.$store.dispatch("account/logOut");
+    }
   },
   data() {
     return {
@@ -83,6 +118,13 @@ export default {
       rightDrawer: false,
       title: "Leoneed's"
     };
+  },
+  mounted() {
+    // this.$store.commit("snackbar/show", {
+    //   message: "test snackbar",
+    //   btnColor: "pink",
+    //   timeout: 5000
+    // });
   }
 };
 </script>
