@@ -83,6 +83,7 @@ export default {
           password: this.loginForm.password
         });
         this.$emit("close");
+        this.setDefaults();
       } catch (err) {
         this.$store.commit("snackbar/show", {
           message: `Authentication failed. (${err.response.data.error || err})`,
@@ -92,6 +93,12 @@ export default {
     },
     register() {
       this.$emit("close");
+      this.setDefaults();
+    },
+    setDefaults() {
+      this.registerForm.email = this.registerForm.password = this.registerForm.confirmPassword =
+        "";
+      this.loginForm.email = this.loginForm.password = "";
     }
   }
 };

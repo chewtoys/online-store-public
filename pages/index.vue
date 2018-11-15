@@ -7,7 +7,7 @@
       </div>
       <v-container fluid grid-list-md>
     <v-layout row wrap>
-      <v-flex d-flex xs12 sm6 md4>
+      <v-flex v-on:click="sendAuthedRequest" d-flex xs12 sm6 md4>
         <v-card color="purple" dark>
           <v-card-title primary class="title">Lorem</v-card-title>
           <v-card-text>{{ lorem }}</v-card-text>
@@ -83,6 +83,10 @@ export default {
   methods: {
     inc() {
       this.$store.commit("inc");
+    },
+    async sendAuthedRequest() {
+      var ret = await this.$axios.get("account/test");
+      console.log(ret);
     }
   },
   mounted() {}

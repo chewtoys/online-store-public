@@ -22,6 +22,9 @@ const account = {
         if (data.access_token) {
           Cookies.set("access-token", data.access_token);
         }
+        if (data.refresh_token) {
+          Cookies.set("refresh-token", data.refresh_token);
+        }
         let userDataResponse = await this.$axios.post("account/tinyProfile");
         commit("authenticate", userDataResponse.data);
       } catch (err) {
