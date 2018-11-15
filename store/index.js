@@ -1,5 +1,6 @@
 import Vuex from "vuex";
 import account from "./account/account";
+import categories from "./data/categories";
 import snackbar from "./snackbar";
 const store = () =>
   new Vuex.Store({
@@ -17,7 +18,8 @@ const store = () =>
     },
     modules: {
       account,
-      snackbar
+      snackbar,
+      categories
     }
   });
 export default store;

@@ -111,6 +111,7 @@ export default {
       fixed: false,
       items: [
         { icon: "apps", title: "Welcome", to: "/" },
+        { icon: "category", title: "Categories", to: "/category" },
         { icon: "bubble_chart", title: "Inspire", to: "/inspire" }
       ],
       miniVariant: false,
