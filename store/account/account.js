@@ -6,21 +6,35 @@ const account = {
     username: ""
   }),
   mutations: {
-    authenticate(state) {
+    authenticate(state, data) {
       state.authenticated = true;
+      state.username = data.username;
+    },
+    logout(state) {
+      state.authenticated = false;
+      state.username = "";
     }
   },
   actions: {
-    async logIn({ commit }, email, password) {
+    async logIn({ commit }, params) {
       try {
-        let { data } = await $axios.auth(email, password);
+        let { data } = await this.$axios.auth(params.email, params.password);
         if (data.access_token) {
           Cookies.set("access-token", data.access_token);
         }
-        commit("authenticate");
+        if (data.refresh_token) {
+          Cookies.set("refresh-token", data.refresh_token);
+        }
+        let userDataResponse = await this.$axios.post("account/tinyProfile");
+        commit("authenticate", userDataResponse.data);
       } catch (err) {
         console.log(err);
+        throw err;
       }
+    },
+    async logOut({ commit }) {
+      await this.$axios.post("account/logout");
+      commit("logout");
     },
     test() {
       console.log("test");

@@ -7,7 +7,7 @@
       </div>
       <v-container fluid grid-list-md>
     <v-layout row wrap>
-      <v-flex d-flex xs12 sm6 md4>
+      <v-flex v-on:click="sendAuthedRequest" d-flex xs12 sm6 md4>
         <v-card color="purple" dark>
           <v-card-title primary class="title">Lorem</v-card-title>
           <v-card-text>{{ lorem }}</v-card-text>
@@ -67,7 +67,9 @@
 </template>
 
 <script>
+import AuthForm from "~/Components/AuthForm";
 export default {
+  components: { AuthForm },
   data() {
     return {
       lorem: `Lorem ipsum dolor sit amet, mel at clita quando. Te sit oratio vituperatoribus, nam ad ipsum posidonium mediocritatem, explicari dissentiunt cu mea. Repudiare disputationi vim in, mollis iriure nec cu, alienum argumentum ius ad. Pri eu justo aeque torquatos.`
@@ -81,11 +83,12 @@ export default {
   methods: {
     inc() {
       this.$store.commit("inc");
+    },
+    async sendAuthedRequest() {
+      var ret = await this.$axios.get("account/test");
+      console.log(ret);
     }
   },
-  mounted() {
-    // this.$axios.get("/values").then(({ data }) => console.log(data));
-    this.$axios.auth("admin", "111111").then(({ data }) => console.log(data));
-  }
+  mounted() {}
 };
 </script>
