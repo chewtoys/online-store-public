@@ -20,9 +20,10 @@
               </v-container>
             </v-card-text>
             <v-card-actions>
-              <v-btn color="blue darken-1" flat @click.native="$emit('close')">Cancel</v-btn>
+              <v-btn color="blue darken-1" :disabled="requestInProgress" flat @click.native="$emit('close')">Cancel</v-btn>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" flat @click.native="login">Submit</v-btn>
+              <v-btn color="blue darken-1" :disabled="requestInProgress" flat @click.native="login">Submit
+              </v-btn>
             </v-card-actions>
             </v-card>
         </v-tab-item>
@@ -47,9 +48,9 @@
               </v-container>
             </v-card-text>
             <v-card-actions>
-              <v-btn color="blue darken-1" flat @click.native="$emit('close')">Cancel</v-btn>
+              <v-btn color="blue darken-1" :disabled="requestInProgress" flat @click.native="$emit('close')">Cancel</v-btn>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" flat @click.native="register">Submit</v-btn>
+              <v-btn color="blue darken-1" :disabled="requestInProgress" flat @click.native="register">Submit</v-btn>
             </v-card-actions>
             </v-card>
         </v-tab-item>
@@ -65,6 +66,7 @@ export default {
   },
   data: () => ({
     dialog: false,
+    requestInProgress: false,
     loginForm: {
       email: "",
       password: ""

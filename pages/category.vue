@@ -1,28 +1,33 @@
 <template>
-  <v-layout column justify-center align-center>
-    <v-flex xs12 sm8 md6>
-      <div class="text-xs-center">
-        <h2>Categories</h2>
-      </div>
-      <v-container fluid grid-list-md>
-        <v-layout row wrap>
-            <v-flex d-flex md2>
-            <v-card color="green lighten-2" dark>
-              <v-card-text>{{ lorem.slice(0, 90) }}</v-card-text>
-            </v-card>
-          </v-flex>
-          <v-flex d-flex md2>
-            <v-card color="green lighten-2" dark>
-              <v-card-text>{{ lorem.slice(0, 90) }}</v-card-text>
-            </v-card>
-          </v-flex>
-          <v-flex d-flex md2>
-            <v-card color="green lighten-2" dark>
-              <v-card-text>{{ lorem.slice(0, 90) }}</v-card-text>
-            </v-card>
-          </v-flex>
-        </v-layout>
-      </v-container>
+<v-layout row>
+    <v-flex xs12>
+      <v-card max-height="100%">
+        <v-card-title class="blue white--text">
+          <span class="headline">Categories</span>
+          <v-spacer></v-spacer>
+          <v-menu v-if="isAdmin" bottom left>
+            <v-btn
+              slot="activator"
+              dark
+              icon
+            >
+              <v-icon>more_vert</v-icon>
+            </v-btn>
+
+            <v-list>
+              <v-list-tile
+                v-for="(item, i) in menuActions"
+                :key="i"
+                @click="menuActionClick(item.title)"
+              >
+                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
+        </v-card-title>
+
+        <v-card-text>Lorem Ipsum</v-card-text>
+      </v-card>
     </v-flex>
   </v-layout>
 </template>
@@ -33,15 +38,25 @@ export default {
   components: { AuthForm },
   data() {
     return {
-      lorem: `Lorem ipsum dolor sit amet, mel at clita quando. Te sit oratio vituperatoribus, nam ad ipsum posidonium mediocritatem, explicari dissentiunt cu mea. Repudiare disputationi vim in, mollis iriure nec cu, alienum argumentum ius ad. Pri eu justo aeque torquatos.`
+      menuActions: [{title: 'Create'}, {title: 'Edit'}, {title: 'Delete'}]
     };
   },
   computed: {
     list() {
       return this.$store.state.data.categories;
+    },
+    isAdmin(){
+      return this.$store.getters["account/isAdmin"]
+    }
+
+  },
+  methods: {
+    menuActionClick(item){
+      switch(item.title) {
+        
+      }
     }
   },
-  methods: {},
   mounted() {
     this.$store.dispatch("categories/getCategories");
   }

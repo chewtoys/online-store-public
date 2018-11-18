@@ -3,11 +3,18 @@ const account = {
   namespaced: true,
   state: () => ({
     authenticated: false,
-    username: ""
+    username: "",
+    roles: []
   }),
+  getters: {
+    isAdmin: state => {
+      return state.roles && state.roles.length && state.roles.indexOf("Admin") !== -1;
+    }
+  },
   mutations: {
     authenticate(state, data) {
       state.authenticated = true;
+      state.roles = data.roles;
       state.username = data.username;
     },
     logout(state) {
@@ -21,12 +28,12 @@ const account = {
         let { data } = await this.$axios.auth(params.email, params.password);
         if (data.access_token) {
           Cookies.set("access-token", data.access_token);
-        }
-        if (data.refresh_token) {
           Cookies.set("refresh-token", data.refresh_token);
+
+          let userDataResponse = await this.$axios.post("account/tinyProfile");
+          userDataResponse.data.username = data.username;
+          commit("authenticate", userDataResponse.data);
         }
-        let userDataResponse = await this.$axios.post("account/tinyProfile");
-        commit("authenticate", userDataResponse.data);
       } catch (err) {
         console.log(err);
         throw err;
