@@ -5,7 +5,8 @@
         <v-card-title class="blue white--text">
           <span class="headline">Categories</span>
           <v-spacer></v-spacer>
-          <v-menu v-if="isAdmin" bottom left>
+          <!-- <v-menu v-if="isAdmin" bottom left> -->
+          <v-menu bottom left>
             <v-btn
               slot="activator"
               dark
@@ -18,7 +19,7 @@
               <v-list-tile
                 v-for="(item, i) in menuActions"
                 :key="i"
-                @click="menuActionClick(item.title)"
+                @click="switchDialog(item.title, true)"
               >
                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
               </v-list-tile>
@@ -29,16 +30,18 @@
         <v-card-text>Lorem Ipsum</v-card-text>
       </v-card>
     </v-flex>
+    <category-form :model="createModel" dialogTitle="Create category" @close="switchDialog('Create', false)" :show="getActiveDialog('Create')"></category-form>
   </v-layout>
 </template>
 
 <script>
-import AuthForm from "~/Components/AuthForm";
+import CategoryForm from "~/Components/CategoryForm";
 export default {
-  components: { AuthForm },
+  components: { CategoryForm },
   data() {
     return {
-      menuActions: [{title: 'Create'}, {title: 'Edit'}, {title: 'Delete'}]
+      menuActions: [{title: 'Create', active: false}, {title: 'Edit', active: false}, {title: 'Delete', active: false}],
+      createModel:{Title: "", ImageID: null}
     };
   },
   computed: {
@@ -51,10 +54,14 @@ export default {
 
   },
   methods: {
-    menuActionClick(item){
-      switch(item.title) {
-        
-      }
+    getActiveDialog(dialogName){
+      var action = this.menuActions.filter((item) => item.title === dialogName);
+      if(action) return action[0].active;
+      return false;
+    },
+    switchDialog(dialogName, show){
+      var action = this.menuActions.filter((item) => item.title === dialogName);
+      this.menuActions[this.menuActions.indexOf(action[0])].active = show;
     }
   },
   mounted() {

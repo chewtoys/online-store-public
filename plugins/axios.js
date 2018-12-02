@@ -2,7 +2,7 @@ import axios from "axios";
 import * as Cookies from "js-cookie";
 import querystring from "querystring";
 export default function({ $axios }) {
-  var baseDomain = "http://localhost:7000";
+  var baseDomain = "http://localhost:8100";
   $axios.defaults.baseURL = `${baseDomain}/api`;
   let isRefreshing = false;
   let refreshSubscribers = [];
@@ -88,4 +88,19 @@ export default function({ $axios }) {
       }
     );
   };
+  $axios.postFile = (url, file) => {
+		let data = new FormData()
+		data.append('file1', file)
+		return $axios
+			.post(url, data, {
+				headers: {
+					'Content-Type': `multipart/form-data; boundary=${data._boundary}`
+				}
+			})
+			.catch(err => {
+				throw err
+			})
+	};
+
+
 }

@@ -2,17 +2,17 @@
   <v-layout row justify-center>
     <v-dialog v-model="show" persistent max-width="500px">
           <v-card>
-            <v-card-title>
+            <v-card-title class="form-title">
               {{dialogTitle}}
             </v-card-title>
             <v-card-text>
-              <v-container grid-list-md>
+              <v-container grid-list-md class="form-container">
                 <v-layout wrap>
                   <v-flex xs12>
-                    <v-text-field v-model="loginForm.email" label="Email" required></v-text-field>
+                    <v-text-field v-model="category.Title" label="Title" required></v-text-field>
                   </v-flex>
                   <v-flex xs12>
-                    <v-text-field v-model="loginForm.password" label="Password" type="password" required></v-text-field>
+                    <file-input :required="true" @formData="onFileChange" label="Choose file..." />
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -20,7 +20,7 @@
             <v-card-actions>
               <v-btn color="blue darken-1" :disabled="requestInProgress" flat @click.native="$emit('close')">Cancel</v-btn>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" :disabled="requestInProgress" flat @click.native="login">Submit
+              <v-btn color="blue darken-1" :disabled="requestInProgress" flat @click.native="create">Submit
               </v-btn>
             </v-card-actions>
             </v-card>
@@ -29,7 +29,11 @@
 </template>
 
 <script>
+import FileInput from '~/inputs/FileInput'
 export default {
+  components:{
+    FileInput
+  },
   props: {
     show: Boolean,
     dialogTitle: String,
@@ -45,6 +49,13 @@ export default {
     },
   }),
   methods: {
+    onFileChange(e){
+      debugger;
+      this.$axios.postFile('file/upload', e[0].get("data"));
+    },
+    create(){
+      // if(!this.category.Title)
+    }
   },
   mounted() {
     Object.assign(this.category, this.model);    
@@ -52,3 +63,12 @@ export default {
 
 };
 </script>
+<style lang="css">
+  .form-container{
+    padding-top: 0;
+  }
+  .form-title{
+    font-weight: 400;
+    font-size: 16px;
+  }
+</style>
