@@ -2,60 +2,52 @@
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
       <div class="text-xs-center">
-        <img src="logo.svg" width="64"/>
+        <img src="logo.svg" width="64">
         <h2>The best online store!</h2>
       </div>
       <v-container fluid grid-list-md>
-    <v-layout row wrap>
-      <v-flex v-on:click="sendAuthedRequest" d-flex xs12 sm6 md4>
-        <v-card color="purple" dark>
-          <v-card-title primary class="title">Lorem</v-card-title>
-          <v-card-text>{{ lorem }}</v-card-text>
-        </v-card>
-      </v-flex>
-      <v-flex d-flex xs12 sm6 md3>
         <v-layout row wrap>
-          <v-flex d-flex>
-            <v-card color="indigo" dark>
-              <v-card-text>{{ lorem.slice(0, 70) }}</v-card-text>
+          <v-flex v-on:click="sendAuthedRequest" d-flex lg2>
+            <v-card color="purple" dark>
+              <v-card-title primary class="title">Lorem</v-card-title>
+              <v-card-text>{{ lorem }}</v-card-text>
             </v-card>
           </v-flex>
-          <v-flex d-flex>
+          <v-flex d-flex xs12 sm6 md3>
             <v-layout row wrap>
-              <v-flex
-                v-for="n in 2"
-                :key="n"
-                d-flex
-                xs12
-              >
-                <v-card
-                  color="red lighten-2"
-                  dark
-                >
-                  <v-card-text>{{ lorem.slice(0, 40) }}</v-card-text>
+              <v-flex d-flex>
+                <v-card color="indigo" dark>
+                  <v-card-text>{{ lorem.slice(0, 70) }}</v-card-text>
                 </v-card>
+              </v-flex>
+              <v-flex d-flex>
+                <v-layout row wrap>
+                  <v-flex v-for="n in 2" :key="n" d-flex xs12>
+                    <v-card color="red lighten-2" dark>
+                      <v-card-text>{{ lorem.slice(0, 40) }}</v-card-text>
+                    </v-card>
+                  </v-flex>
+                </v-layout>
               </v-flex>
             </v-layout>
           </v-flex>
+          <v-flex d-flex xs12 sm6 md2 child-flex>
+            <v-card color="green lighten-2" dark>
+              <v-card-text>{{ lorem.slice(0, 90) }}</v-card-text>
+            </v-card>
+          </v-flex>
+          <v-flex d-flex xs12 sm6 md3>
+            <v-card color="blue lighten-2" dark>
+              <v-card-text>{{ lorem.slice(0, 100) }}</v-card-text>
+            </v-card>
+          </v-flex>
         </v-layout>
-      </v-flex>
-      <v-flex d-flex xs12 sm6 md2 child-flex>
-        <v-card color="green lighten-2" dark>
-          <v-card-text>{{ lorem.slice(0, 90) }}</v-card-text>
-        </v-card>
-      </v-flex>
-      <v-flex d-flex xs12 sm6 md3>
-        <v-card color="blue lighten-2" dark>
-          <v-card-text>{{ lorem.slice(0, 100) }}</v-card-text>
-        </v-card>
-      </v-flex>
-    </v-layout>
-  </v-container>
+      </v-container>
       <v-card>
         <v-card-title class="headline">Welcome to the Vuetify + Nuxt.js template</v-card-title>
         <v-card-text>
           <p>counter:{{counter}}</p>
-          <v-btn @click="inc">Click!</v-btn>     
+          <v-btn @click="inc">Click!</v-btn>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>

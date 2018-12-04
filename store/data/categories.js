@@ -17,6 +17,17 @@ const categories = {
         console.log(err);
         throw err;
       }
+    },
+    async create({ commit }, item) {
+      try {
+        debugger;
+        let { data } = await this.$axios.post("categories/create", item);
+        console.log(data);
+        debugger;
+      } catch (err) {
+        console.log(err);
+        debugger;
+      }
     }
   }
 };
