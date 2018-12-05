@@ -12,6 +12,9 @@
               <v-flex xs12>
                 <file-input :required="true" @formData="onFileChange" label="Choose file..."/>
               </v-flex>
+              <v-flex xs12>
+                <color-picker v-on:input="onColorChange" />
+              </v-flex>
             </v-layout>
           </v-container>
         </v-card-text>
@@ -37,9 +40,11 @@
 
 <script>
 import FileInput from "~/inputs/FileInput";
+import ColorPicker from "~/inputs/ColorPicker";
 export default {
   components: {
-    FileInput
+    FileInput,
+    ColorPicker
   },
   props: {
     show: Boolean,
@@ -49,31 +54,39 @@ export default {
   data: () => ({
     dialog: false,
     requestInProgress: false,
+    picker: {
+      hex: '#194d33',
+      hsl: { h: 150, s: 0.5, l: 0.2, a: 1 },
+      hsv: { h: 150, s: 0.66, v: 0.30, a: 1 },
+      rgba: { r: 25, g: 77, b: 51, a: 1 },
+      a: 1
+    },
     category: {
       Title: "",
       Image: null,
-      ImageID: null
+      ImageID: null,
+      Color: ""
     }
   }),
   methods: {
     onFileChange(e) {
       this.category.Image = e[0].get("data");
     },
+    onColorChange: function(colorString){
+      this.category.Color = colorString;
+    },
     create() {
       var that = this;
-      this.$store.dispatch("categories/create", {
-        Title: that.category.Title,
-        ImageID: that.category.ImageID
-      });
-      // this.$axios
-      //   .postFile("file/upload", this.category.Image)
-      //   .then(function(fileID) {
-      //     that.category.ImageID = fileID;
-      //     that.$store.dispatch("categories/create", {
-      //       Title: that.category.Title,
-      //       ImageID: that.category.ImageID
-      //     });
-      //   });
+      this.$axios
+        .postFile("file/upload", this.category.Image)
+        .then(function(uploadResult) {
+          that.category.ImageID = uploadResult.data;
+          that.$store.dispatch("categories/create", {
+            Title: that.category.Title,
+            ImageID: that.category.ImageID,
+            Color: that.category.Color
+          });
+        });
     }
   },
   mounted() {

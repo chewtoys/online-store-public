@@ -26,8 +26,21 @@
             </v-list>
           </v-menu>
         </v-card-title>
-
-        <v-card-text>Lorem Ipsum</v-card-text>
+        <v-container fluid>
+          <v-layout row wrap>
+            <v-flex xs12 md6 lg4 v-for="item in list" :key="item">
+              <v-card :color="item.Color">
+                <v-img height="200px" :src="'http://localhost:8100/api/file/get?fileid=' +  item.FileID"></v-img>
+                <v-card-title primary-title>
+                  <div>
+                    <div class="headline caterogy-header"> {{item.Title}} </div>
+                    <span class="gray--text">{{item.Description || 'some item description in future comes here'}}</span>
+                  </div>
+                </v-card-title>  
+              </v-card>  
+            </v-flex>  
+          </v-layout>  
+        </v-container>
       </v-card>
     </v-flex>
     <category-form :model="createModel" dialogTitle="Create category" @close="switchDialog('Create', false)" :show="getActiveDialog('Create')"></category-form>
@@ -41,16 +54,17 @@ export default {
   data() {
     return {
       menuActions: [{title: 'Create', active: false}, {title: 'Edit', active: false}, {title: 'Delete', active: false}],
-      createModel:{Title: "", ImageID: null}
+      createModel:{Title: "", ImageID: null},
+      categoriesLoaded: false
     };
   },
   computed: {
     list() {
-      return this.$store.state.data.categories;
+      return this.$store.state.categories.categories;
     },
     isAdmin(){
       return this.$store.getters["account/isAdmin"]
-    }
+    },
 
   },
   methods: {
@@ -65,7 +79,18 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch("categories/getCategories");
+    var that = this;
+    this.$store.dispatch("categories/getCategories").then(function(){
+      that.categoriesLoaded = true;
+    });
   }
 };
 </script>
+
+<style>
+/* .caterogy-header{
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+} */
+</style>
+
