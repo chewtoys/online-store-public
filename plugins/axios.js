@@ -2,7 +2,7 @@ import axios from "axios";
 import * as Cookies from "js-cookie";
 import querystring from "querystring";
 export default function({ $axios }) {
-  var baseDomain = "http://localhost:8100";
+  var baseDomain = "http://localhost:7000";
   $axios.defaults.baseURL = `${baseDomain}/api`;
   let isRefreshing = false;
   let refreshSubscribers = [];
@@ -88,19 +88,32 @@ export default function({ $axios }) {
       }
     );
   };
+  $axios.authByToken = () => {
+    if (Cookies.get("refresh-token"))
+      return $axios.post(
+        `${baseDomain}/token`,
+        querystring.stringify({
+          grant_type: "refresh_token",
+          refresh_token: Cookies.get("refresh-token")
+        }),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          }
+        }
+      );
+  };
   $axios.postFile = (url, file) => {
-		let data = new FormData()
-		data.append('file1', file)
-		return $axios
-			.post(url, data, {
-				headers: {
-					'Content-Type': `multipart/form-data; boundary=${data._boundary}`
-				}
-			})
-			.catch(err => {
-				throw err
-			})
-	};
-
-
+    let data = new FormData();
+    data.append("file1", file);
+    return $axios
+      .post(url, data, {
+        headers: {
+          "Content-Type": `multipart/form-data; boundary=${data._boundary}`
+        }
+      })
+      .catch(err => {
+        throw err;
+      });
+  };
 }
