@@ -1,19 +1,8 @@
 <template>
   <v-app>
-    <v-navigation-drawer
-      :clipped="true"
-      v-model="drawer"
-      fixed
-      app
-    >
+    <v-navigation-drawer :clipped="true" v-model="drawer" fixed app>
       <v-list>
-        <v-list-tile
-          router
-          :to="item.to"
-          :key="i"
-          v-for="(item, i) in items"
-          exact
-        >
+        <v-list-tile router :to="item.to" :key="i" v-for="(item, i) in items" exact>
           <v-list-tile-action>
             <v-icon v-html="item.icon"></v-icon>
           </v-list-tile-action>
@@ -27,10 +16,9 @@
       <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
       <img width="32" src="logo.svg">
 
-      <v-toolbar-title v-text="title">
-      </v-toolbar-title>
+      <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
-      
+
       <v-btn icon @click="showAuth = true" v-if="!authData.authenticated">
         <v-icon>account_circle</v-icon>
       </v-btn>
@@ -38,20 +26,14 @@
       <v-btn icon @click="logout" v-if="authData.authenticated">
         <v-icon>exit_to_app</v-icon>
       </v-btn>
-      <auth-form :show="showAuth" v-on:close="showAuth = false" />
-      
+      <auth-form :show="showAuth" v-on:close="showAuth = false"/>
     </v-toolbar>
     <v-content>
       <v-container>
-        <nuxt />
+        <nuxt/>
       </v-container>
     </v-content>
-    <v-navigation-drawer
-      temporary
-      :right="right"
-      v-model="rightDrawer"
-      fixed
-    >
+    <v-navigation-drawer temporary :right="right" v-model="rightDrawer" fixed>
       <v-list>
         <v-list-tile @click.native="right = !right">
           <v-list-tile-action>
@@ -65,15 +47,10 @@
       v-model="snackbar.show"
       :bottom="true"
       :multi-line="false"
-      :timeout="snackbar.timeout">
+      :timeout="snackbar.timeout"
+    >
       {{ snackbar.message }}
-      <v-btn
-        :color="snackbar.btnColor"
-        flat
-        @click="hideSnackbar"
-      >
-        Close
-      </v-btn>
+      <v-btn :color="snackbar.btnColor" flat @click="hideSnackbar">Close</v-btn>
     </v-snackbar>
     <v-footer :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
@@ -121,6 +98,10 @@ export default {
     };
   },
   mounted() {
+    this.$store.dispatch("account/authByRefresh").catch(function(err) {
+      console.error(err);
+    });
+
     // this.$store.commit("snackbar/show", {
     //   message: "test snackbar",
     //   btnColor: "pink",

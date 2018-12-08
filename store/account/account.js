@@ -8,7 +8,9 @@ const account = {
   }),
   getters: {
     isAdmin: state => {
-      return state.roles && state.roles.length && state.roles.indexOf("Admin") !== -1;
+      return (
+        state.roles && state.roles.length && state.roles.indexOf("Admin") !== -1
+      );
     }
   },
   mutations: {
@@ -42,6 +44,12 @@ const account = {
     async logOut({ commit }) {
       await this.$axios.post("account/logout");
       commit("logout");
+    },
+    async authByRefresh({ commit }) {
+      var { data } = await this.$axios.authByToken();
+      Cookies.set("access-token", data.access_token);
+      Cookies.set("refresh-token", data.refresh_token);
+      commit("authenticate", data);
     },
     test() {
       console.log("test");
