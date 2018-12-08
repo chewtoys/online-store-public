@@ -59,29 +59,29 @@
 </template>
 
 <script>
-import AuthForm from "~/Components/AuthForm";
+import AuthForm from '~/Components/AuthForm'
 export default {
-  components: { AuthForm },
-  data() {
-    return {
-      lorem: `Lorem ipsum dolor sit amet, mel at clita quando. Te sit oratio vituperatoribus, nam ad ipsum posidonium mediocritatem, explicari dissentiunt cu mea. Repudiare disputationi vim in, mollis iriure nec cu, alienum argumentum ius ad. Pri eu justo aeque torquatos.`,
-      testFlexPoint: "lg4"
-    };
-  },
-  computed: {
-    counter() {
-      return this.$store.state.counter;
-    }
-  },
-  methods: {
-    inc() {
-      this.$store.commit("inc");
+    components: { AuthForm },
+    data() {
+        return {
+            lorem: `Lorem ipsum dolor sit amet, mel at clita quando. Te sit oratio vituperatoribus, nam ad ipsum posidonium mediocritatem, explicari dissentiunt cu mea. Repudiare disputationi vim in, mollis iriure nec cu, alienum argumentum ius ad. Pri eu justo aeque torquatos.`,
+            testFlexPoint: 'lg4',
+        }
     },
-    async sendAuthedRequest() {
-      var ret = await this.$axios.get("account/test");
-      console.log(ret);
-    }
-  },
-  mounted() {}
-};
+    computed: {
+        counter() {
+            return this.$store.state.counter
+        },
+    },
+    methods: {
+        inc() {
+            this.$store.commit('inc')
+        },
+        async sendAuthedRequest() {
+            var ret = await this.$axios.get('account/test')
+            console.log(ret)
+        },
+    },
+    mounted() {},
+}
 </script>
