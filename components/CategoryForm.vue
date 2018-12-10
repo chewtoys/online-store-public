@@ -13,7 +13,7 @@
                 <file-input :required="true" @formData="onFileChange" label="Choose file..."/>
               </v-flex>
               <v-flex xs12>
-                <color-picker v-on:input="onColorChange" />
+                <color-picker v-on:input="onColorChange"/>
               </v-flex>
             </v-layout>
           </v-container>
@@ -39,17 +39,17 @@
 </template>
 
 <script>
-import FileInput from "~/inputs/FileInput";
-import ColorPicker from "~/inputs/ColorPicker";
+import FileInput from '~/inputs/FileInput'
+import ColorPicker from '~/inputs/ColorPicker'
 export default {
   components: {
     FileInput,
-    ColorPicker
+    ColorPicker,
   },
   props: {
     show: Boolean,
     dialogTitle: String,
-    model: Object
+    model: Object,
   },
   data: () => ({
     dialog: false,
@@ -57,42 +57,43 @@ export default {
     picker: {
       hex: '#194d33',
       hsl: { h: 150, s: 0.5, l: 0.2, a: 1 },
-      hsv: { h: 150, s: 0.66, v: 0.30, a: 1 },
+      hsv: { h: 150, s: 0.66, v: 0.3, a: 1 },
       rgba: { r: 25, g: 77, b: 51, a: 1 },
-      a: 1
+      a: 1,
     },
     category: {
-      Title: "",
+      Title: '',
       Image: null,
       ImageID: null,
-      Color: ""
-    }
+      Color: '',
+    },
   }),
   methods: {
     onFileChange(e) {
-      this.category.Image = e[0].get("data");
+      this.category.Image = e[0].get('data')
     },
-    onColorChange: function(colorString){
-      this.category.Color = colorString;
+    onColorChange: function(colorString) {
+      this.category.Color = colorString
     },
     create() {
-      var that = this;
+      var that = this
       this.$axios
-        .postFile("file/upload", this.category.Image)
+        .postFile('file/upload', this.category.Image)
         .then(function(uploadResult) {
-          that.category.ImageID = uploadResult.data;
-          that.$store.dispatch("categories/create", {
+          that.category.ImageID = uploadResult.data
+          that.$store.dispatch('categories/create', {
             Title: that.category.Title,
             ImageID: that.category.ImageID,
-            Color: that.category.Color
-          });
-        });
-    }
+            Color: that.category.Color,
+          })
+          that.$emit('close')
+        })
+    },
   },
   mounted() {
-    Object.assign(this.category, this.model);
-  }
-};
+    Object.assign(this.category, this.model)
+  },
+}
 </script>
 <style lang="css">
 .form-container {

@@ -46,7 +46,7 @@
     <v-snackbar
       v-model="snackbar.show"
       :bottom="true"
-      :multi-line="false"
+      :multi-line="snackbar.multiline"
       :timeout="snackbar.timeout"
     >
       {{ snackbar.message }}
@@ -59,26 +59,26 @@
 </template>
 
 <script>
-import AuthForm from "~/Components/AuthForm";
+import AuthForm from '~/Components/AuthForm'
 export default {
   components: {
-    AuthForm
+    AuthForm,
   },
   computed: {
     snackbar: function() {
-      return this.$store.state.snackbar;
+      return this.$store.state.snackbar
     },
     authData: function() {
-      return this.$store.state.account;
-    }
+      return this.$store.state.account
+    },
   },
   methods: {
     hideSnackbar: function() {
-      this.$store.commit("snackbar/close");
+      this.$store.commit('snackbar/close')
     },
     logout: function() {
-      this.$store.dispatch("account/logOut");
-    }
+      this.$store.dispatch('account/logOut')
+    },
   },
   data() {
     return {
@@ -87,26 +87,38 @@ export default {
       drawer: true,
       fixed: false,
       items: [
-        { icon: "apps", title: "Welcome", to: "/" },
-        { icon: "category", title: "Categories", to: "/category" },
-        { icon: "bubble_chart", title: "Inspire", to: "/inspire" }
+        { icon: 'apps', title: 'Welcome', to: '/' },
+        { icon: 'category', title: 'Categories', to: '/category' },
+        { icon: 'bubble_chart', title: 'Inspire', to: '/inspire' },
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: "Leoneed's"
-    };
+      title: "Leoneed's",
+    }
   },
   mounted() {
-    this.$store.dispatch("account/authByRefresh").catch(function(err) {
-      console.error(err);
-    });
+    this.$store
+      .dispatch('account/authByRefresh')
+      .then(() => {
+        if (!this.$store.state.account.authenticated)
+          this.$store.commit('snackbar/show', {
+            message:
+              "You have not been here for too long. \n We're sorry you need to log in again :(",
+            btnColor: 'green',
+            timeout: 4000,
+            multiline: true,
+          })
+      })
+      .catch(function(err) {
+        console.error(err)
+      })
 
     // this.$store.commit("snackbar/show", {
     //   message: "test snackbar",
     //   btnColor: "pink",
     //   timeout: 5000
     // });
-  }
-};
+  },
+}
 </script>

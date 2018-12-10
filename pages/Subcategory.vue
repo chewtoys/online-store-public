@@ -25,12 +25,7 @@
         <v-container fluid>
           <v-layout row wrap justify-space-between>
             <v-flex xs12 md6 lg4 v-for="item in list" :key="item.ID" class="card-wrap">
-              <v-card
-                :color="item.Color"
-                hover
-                class="category-card"
-                @click.native="chooseCategory(item)"
-              >
+              <v-card :color="item.Color" hover class="category-card">
                 <v-img
                   class="category-image"
                   :src="'http://localhost:8100/api/file/get?fileid=' +  item.FileID"
@@ -90,9 +85,6 @@ export default {
     switchDialog(dialogName, show) {
       var action = this.menuActions.filter(item => item.title === dialogName)
       this.menuActions[this.menuActions.indexOf(action[0])].active = show
-    },
-    chooseCategory(e) {
-      console.log(e)
     },
   },
   mounted() {
