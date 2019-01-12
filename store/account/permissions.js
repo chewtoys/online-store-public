@@ -3,6 +3,7 @@ const permissions = {
   state: () => ({
     roles: [],
     rolePermissions: [],
+    permissionsActions: ['Create', 'Read', 'Update', 'Delete'],
   }),
   mutations: {
     setRoles(state, data) {
@@ -32,6 +33,13 @@ const permissions = {
         if (data) {
           commit('setPermissions', data)
         }
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    async updatePermission({ commit }, payload) {
+      try {
+        await this.$axios.post('permissions/update', payload)
       } catch (err) {
         console.error(err)
       }

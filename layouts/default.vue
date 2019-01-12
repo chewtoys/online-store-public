@@ -10,6 +10,21 @@
             <v-list-tile-title v-text="item.title"></v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+
+        <v-list-group prepend-icon="settings" v-if="serviceItems.length">
+          <v-list-tile slot="activator">
+            <v-list-tile-title>Service</v-list-tile-title>
+          </v-list-tile>
+
+          <v-list-tile router :to="item.to" v-for="(item, i) in serviceItems" :key="i">
+            <v-list-tile-action>
+              <v-icon v-html="item.icon"></v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title v-text="item.title"></v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar fixed app clipped-left>
@@ -18,15 +33,22 @@
 
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
+      <div>
+        <span style="cursor:pointer" v-if="!authData.authenticated" @click="showAuth = true">
+          <v-btn icon>
+            <v-icon>account_circle</v-icon>
+          </v-btn>Log in
+        </span>
+        
+        <span v-if="authData.authenticated">
+          {{authData.username}}
+          <v-btn icon @click="logout" v-if="authData.authenticated">
+            <v-icon>exit_to_app</v-icon>
+          </v-btn>
+        </span>
 
-      <v-btn icon @click="showAuth = true" v-if="!authData.authenticated">
-        <v-icon>account_circle</v-icon>
-      </v-btn>
-      <span v-if="authData.authenticated">{{authData.username}}</span>
-      <v-btn icon @click="logout" v-if="authData.authenticated">
-        <v-icon>exit_to_app</v-icon>
-      </v-btn>
-      <auth-form :show="showAuth" v-on:close="showAuth = false"/>
+        <auth-form :show="showAuth" v-on:close="showAuth = false"/>
+      </div>
     </v-toolbar>
     <v-content>
       <v-container>
@@ -70,6 +92,17 @@ export default {
     },
     authData: function() {
       return this.$store.state.account
+    },
+    serviceItems: function() {
+      let authed = this.$store.state.account.authenticated
+      let arr = []
+      if (authed)
+        arr.push({
+          icon: 'account_circle',
+          title: 'Permissions',
+          to: '/permissions',
+        })
+      return arr
     },
   },
   methods: {
@@ -122,3 +155,9 @@ export default {
   },
 }
 </script>
+<style lang="scss">
+.container {
+  min-width: 100%;
+  padding: 0.8rem;
+}
+</style>

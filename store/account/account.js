@@ -51,6 +51,25 @@ const account = {
       Cookies.set('refresh-token', data.refresh_token)
       commit('authenticate', data)
     },
+    async register({ commit }, payload) {
+      try {
+        var { data } = await this.$axios.post('account/register', payload)
+        this.commit('snackbar/show', {
+          message: data,
+          btnColor: 'green',
+        })
+      } catch (err) {
+        this.commit('snackbar/show', {
+          message: err.response.data.ExceptionMessage,
+          btnColor: 'red',
+        })
+        throw err
+      }
+      await this.dispatch('account/logIn', {
+        email: payload.Email,
+        password: payload.Password,
+      })
+    },
     test() {
       console.log('test')
     },
