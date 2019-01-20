@@ -7,7 +7,7 @@
           <v-spacer></v-spacer>
           <!-- <v-menu v-if="isAdmin" bottom left> -->
         </v-card-title>
-        <v-container fluid>
+        <v-container v-if="pageLoaded" fluid>
           <v-layout row wrap justify-space-between class="permissions-wrap" v-if="isAbleToAccess">
             <v-flex xs12>
               <v-flex xs3>
@@ -22,6 +22,7 @@
               </v-flex>
             </v-flex>
             <v-layout column v-if="selectedRole && listLoaded">
+              <h2 class="types-header">Type permissions</h2>
               <v-layout fluid row>
                 <v-flex xs8 md4>
                   <span class="permissions-header">Type</span>
@@ -46,8 +47,35 @@
             <v-flex class="permissions-preloader" xs12 v-else-if="!listLoaded && selectedRole">
               <v-progress-circular :size="50" indeterminate></v-progress-circular>
             </v-flex>
+
+            <v-flex xs12 v-if="selectedRole" class="specials-wrap">
+              <v-layout column align-content-start v-if="selectedRole && specialsLoaded">
+                <h2 class="specials-header">Special permissions</h2>
+                <v-layout
+                  class="permission-row"
+                  fluid
+                  row
+                  v-for="item in roleSpecials"
+                  :key="item.PermissionID"
+                >
+                  <v-flex xs4>{{item.PermissionTitle}}</v-flex>
+                  <v-checkbox v-model="item.IsEnabled" @change="onSpecialChange(item)"/>
+                </v-layout>
+              </v-layout>
+              <v-flex
+                class="permissions-preloader"
+                xs12
+                v-else-if="!specialsLoaded && selectedRole"
+              >
+                <v-progress-circular :size="50" indeterminate></v-progress-circular>
+              </v-flex>
+            </v-flex>
           </v-layout>
+
           <access-denied v-else/>
+        </v-container>
+        <v-container d-flex justify-space-around v-else>
+          <v-progress-circular :size="50" indeterminate></v-progress-circular>
         </v-container>
       </v-card>
     </v-flex>
@@ -63,6 +91,8 @@ export default {
     return {
       selectedRole: null,
       listLoaded: false,
+      pageLoaded: false,
+      specialsLoaded: false,
     }
   },
   computed: {
@@ -75,9 +105,11 @@ export default {
     rolePermissions() {
       return this.$store.state.permissions.rolePermissions
     },
+    roleSpecials() {
+      return this.$store.state.permissions.roleSpecials
+    },
     isAbleToAccess() {
-      let account = this.$store.state.account
-      return account.authenticated && account.username === 'admin'
+      return this.$store.getters['account/isInRole']('Admin')
     },
   },
   methods: {
@@ -86,6 +118,14 @@ export default {
         .dispatch('permissions/getRolePermissions', this.selectedRole)
         .then(() => {
           this.listLoaded = true
+          this.$store
+            .dispatch(
+              'permissions/getSpecialRolePermissions',
+              this.selectedRole
+            )
+            .then(() => {
+              this.specialsLoaded = true
+            })
         })
     },
     onPermissionChange: function(item, action) {
@@ -96,9 +136,18 @@ export default {
         IsEnabled: item[action],
       })
     },
+    onSpecialChange: function(item) {
+      this.$store.dispatch('permissions/updateSpecial', {
+        RoleID: this.selectedRole,
+        PermissionID: item.PermissionID,
+        IsEnabled: item.IsEnabled,
+      })
+    },
   },
   mounted() {
-    this.$store.dispatch('permissions/getRoles')
+    this.$store.dispatch('permissions/getRoles').then(() => {
+      this.pageLoaded = true
+    })
   },
 }
 </script>
@@ -117,6 +166,18 @@ export default {
   }
   .permissions-preloader {
     text-align: center;
+  }
+  .types-header {
+    margin-bottom: 2.5rem;
+    margin-left: 2rem;
+  }
+  .specials-wrap {
+    margin-top: 2rem;
+
+    .specials-header {
+      margin-left: 2rem;
+      margin-bottom: 2.5rem;
+    }
   }
 }
 </style>

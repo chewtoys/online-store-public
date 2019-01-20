@@ -5,6 +5,8 @@ const account = {
     authenticated: false,
     username: '',
     roles: [],
+    specialRoles: [],
+    _definedRoles: ['Admin', 'Buyer', 'Editor'],
   }),
   getters: {
     isAdmin: state => {
@@ -12,16 +14,29 @@ const account = {
         state.roles && state.roles.length && state.roles.indexOf('Admin') !== -1
       )
     },
+    isInRole(state) {
+      return role => state.roles.indexOf(role) !== -1
+    },
   },
   mutations: {
     authenticate(state, data) {
       state.authenticated = true
-      state.roles = data.roles
+      var rolePrefix = 'r_'
+      state._definedRoles.forEach(role => {
+        let roleWithoutPrefix = role.replace(rolePrefix, '')
+        if (Object.keys(data).indexOf(rolePrefix + role) !== -1)
+          state.roles.push(roleWithoutPrefix)
+      })
+      console.log('state.roles', state.roles)
       state.username = data.username
+    },
+    setSpecialRoles(state, data) {
+      state.specialRoles = data
     },
     logout(state) {
       state.authenticated = false
       state.username = ''
+      state.roles = []
     },
   },
   actions: {
@@ -31,11 +46,11 @@ const account = {
         if (data.access_token) {
           Cookies.set('access-token', data.access_token)
           Cookies.set('refresh-token', data.refresh_token)
-
-          let userDataResponse = await this.$axios.post('account/tinyProfile')
-          userDataResponse.data.username = data.username
-          commit('authenticate', userDataResponse.data)
+          commit('authenticate', data)
         }
+        // TODO: the same in auto authoriz
+        let userInfo = await this.$axios.get('account/getUserInfo')
+        commit('setSpecialRoles', userInfo.data.SpecialPermissions)
       } catch (err) {
         console.log(err)
         throw err
@@ -43,13 +58,21 @@ const account = {
     },
     async logOut({ commit }) {
       await this.$axios.post('account/logout')
+      Cookies.remove('access-token')
+      Cookies.remove('refresh-token')
       commit('logout')
     },
     async authByRefresh({ commit }) {
-      var { data } = await this.$axios.authByToken()
-      Cookies.set('access-token', data.access_token)
-      Cookies.set('refresh-token', data.refresh_token)
-      commit('authenticate', data)
+      try {
+        var { data } = await this.$axios.authByToken()
+        Cookies.set('access-token', data.access_token)
+        Cookies.set('refresh-token', data.refresh_token)
+        let userInfo = await this.$axios.get('account/getUserInfo')
+        commit('setSpecialRoles', userInfo.data.SpecialPermissions)
+        commit('authenticate', data)
+      } catch (error) {
+        // ignore
+      }
     },
     async register({ commit }, payload) {
       try {
@@ -69,9 +92,6 @@ const account = {
         email: payload.Email,
         password: payload.Password,
       })
-    },
-    test() {
-      console.log('test')
     },
   },
 }
