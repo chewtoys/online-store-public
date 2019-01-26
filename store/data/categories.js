@@ -1,14 +1,14 @@
 const categories = {
   namespaced: true,
   state: () => ({
-    categories: [],
+    categories: {},
   }),
   mutations: {
     setCategories(state, data) {
       state.categories = data
     },
     addCategory(state, item) {
-      state.categories.push(item)
+      state.categories.Data.push(item)
     },
   },
   actions: {
@@ -16,6 +16,7 @@ const categories = {
       try {
         let { data } = await this.$axios.get('categories/get')
         commit('setCategories', data)
+        console.log(data)
       } catch (err) {
         console.log(err)
         throw err

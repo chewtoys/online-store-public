@@ -4,10 +4,11 @@ _Server_
 
 1. Every listView data should come with current user permissions for lw's entity
 2. Separate 'Identity' project with redefined entities and stores
+3. Make entities with nav property of FileData type return file guid after create
 
 _Client_
 
-1. Every listview visualization must be wrapped in common component that supports:
+4. Every listview visualization must be wrapped in common component that supports:
 
 - displaying errors
 - limiting menu actions
