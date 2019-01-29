@@ -10,6 +10,10 @@ const categories = {
     addCategory(state, item) {
       state.categories.Data.push(item)
     },
+    editCategory(state, item) {
+      var cat = state.categories.Data.filter(c => c.ID == item.ID)[0]
+      state.categories.Data[state.categories.Data.indexOf(cat)] = item
+    },
   },
   actions: {
     async getCategories({ commit }) {
@@ -31,10 +35,17 @@ const categories = {
           ID: item.ID,
           Title: item.Title,
         })
-        debugger
       } catch (err) {
-        console.log(err)
+        console.error(err)
+      }
+    },
+    async update({ commit }, item) {
+      try {
         debugger
+        let { data } = await this.$axios.post('categories/update', item)
+        commit('editCategory', item)
+      } catch (err) {
+        console.error(err)
       }
     },
   },

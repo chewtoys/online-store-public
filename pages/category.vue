@@ -10,6 +10,7 @@
       :Create="list.Create"
       :Update="list.Update"
       :Delete="list.Delete"
+      @setEditing="setEditing"
     >
       <template slot-scope="slotProps">
         <v-card
@@ -34,25 +35,46 @@
       </template>
     </list-view>
     <v-progress-linear v-else :indeterminate="true"></v-progress-linear>
+
     <category-form
-      :model="createModel"
-      dialogTitle="Create category"
-      @close="actionVisible.Create = false"
+      :isNew="true"
+      v-on:close="actionVisible.Create = false"
+      :objModel="createModel"
       :show="actionVisible.Create"
+      dialogTitle="Create category"
     ></category-form>
+
+    <category-form
+      :isNew="false"
+      v-on:close="actionVisible.Update = false"
+      :objModel="updateModel"
+      :show="actionVisible.Update"
+      dialogTitle="Edit category"
+    ></category-form>
+
+    <confirm-dialog
+      :show="actionVisible.Delete"
+      title="Are you sure?"
+      text="This action will delete category and all nested items will become uncategorized."
+      v-on:cancel="actionVisible.Delete = false"
+      v-on:confirm="onDeleteCategory"
+    ></confirm-dialog>
   </v-layout>
 </template>
 
 <script>
 import CategoryForm from '~/Components/CategoryForm'
+import ConfirmDialog from '~/Components/ConfirmDialog'
 import ListView from '~/components/ListView.vue'
 export default {
-  components: { CategoryForm, ListView },
+  components: { CategoryForm, ListView, ConfirmDialog },
   data() {
     return {
       actionVisible: { Create: false, Update: false, Delete: false },
       createModel: { Title: '', ImageID: null },
       categoriesLoaded: false,
+      editingItem: null,
+      updateModel: null,
     }
   },
   computed: {
@@ -70,11 +92,22 @@ export default {
       var action = this.menuActions.filter(item => item.title === dialogName)
       this.menuActions[this.menuActions.indexOf(action[0])].active = show
     },
+    setEditing(item) {
+      this.editingItem = item
+    },
     onCreate() {
       this.actionVisible.Create = true
     },
-    onUpdate(e) {},
-    onDelete(e) {},
+    onUpdate(e) {
+      this.actionVisible.Update = true
+      this.updateModel = this.editingItem
+    },
+    onDelete(e) {
+      this.actionVisible.Delete = true
+    },
+    onDeleteCategory() {
+      console.log(this.editingItem)
+    },
     chooseCategory(e) {
       console.log(e)
     },

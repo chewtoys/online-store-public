@@ -1,56 +1,47 @@
 <template>
-  <v-dialog v-model="show" persistent max-width="500px">
-    <v-card>
-      <v-card-title class="form-title">{{dialogTitle}}</v-card-title>
-      <v-card-text>
-        <v-container grid-list-md class="form-container">
-          <v-layout wrap>
-            <v-flex xs12>
-              <v-text-field v-model="category.Title" label="Title" required></v-text-field>
-            </v-flex>
-            <v-flex xs12>
-              <file-input :required="true" @formData="onFileChange" label="Choose file..."/>
-            </v-flex>
-            <v-flex xs12>
-              <color-picker v-on:input="onColorChange"/>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn
-          color="blue darken-1"
-          :disabled="requestInProgress"
-          flat
-          @click.native="$emit('close')"
-        >Cancel</v-btn>
-        <v-spacer></v-spacer>
-        <v-btn
-          color="blue darken-1"
-          :disabled="requestInProgress"
-          flat
-          @click.native="create"
-        >Submit</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <dialog-form
+    :show="show"
+    :dialogTitle="dialogTitle"
+    @submit="submit"
+    @cancel="$emit('close')"
+    :requestInProgress="requestInProgress"
+  >
+    <v-flex xs12>
+      <v-text-field v-model="category.Title" label="Title" required></v-text-field>
+    </v-flex>
+    <v-flex xs12>
+      <file-input
+        :value="category.FileName"
+        :required="true"
+        @formData="onFileChange"
+        label="Choose file..."
+      />
+    </v-flex>
+    <v-flex xs12>
+      <color-picker v-on:input="onColorChange"/>
+    </v-flex>
+  </dialog-form>
 </template>
 
 <script>
 import FileInput from '~/inputs/FileInput'
+import DialogForm from '~/Components/DialogForm.vue'
 import ColorPicker from '~/inputs/ColorPicker'
+
 export default {
   components: {
     FileInput,
     ColorPicker,
+    DialogForm,
   },
   props: {
     show: Boolean,
     dialogTitle: String,
-    model: Object,
+    objModel: Object,
+    isNew: Boolean,
   },
   data: () => ({
-    dialog: false,
+    fileChanged: false,
     requestInProgress: false,
     picker: {
       hex: '#194d33',
@@ -63,12 +54,15 @@ export default {
       Title: '',
       Image: null,
       ImageID: null,
+      RowVersion: '',
       Color: '',
+      ID: 0,
     },
   }),
   methods: {
     onFileChange(e) {
       this.category.Image = e[0].get('data')
+      this.fileChanged = true
     },
     onColorChange: function(colorString) {
       this.category.Color = colorString
@@ -87,10 +81,46 @@ export default {
           that.$emit('close')
         })
     },
+    update() {
+      var that = this
+      if (this.fileChanged)
+        var promise = this.$axios.postFile('file/upload', this.category.Image)
+      if (promise)
+        promise.then(function(uploadResult) {
+          that.category.ImageID = uploadResult.data
+          that.$store
+            .dispatch('categories/update', {
+              ID: that.category.ID,
+              Title: that.category.Title,
+              ImageID: that.category.ImageID,
+              Color: that.category.Color,
+              RowVersion: that.category.RowVersion,
+            })
+            .then(() => that.$emit('close'))
+        })
+      else
+        this.$store
+          .dispatch('categories/update', {
+            ID: that.category.ID,
+            Title: that.category.Title,
+            ImageID: that.category.ImageID,
+            Color: that.category.Color,
+            RowVersion: that.category.RowVersion,
+          })
+          .then(() => that.$emit('close'))
+    },
+    submit() {
+      if (this.isNew) this.create()
+      else this.update()
+    },
   },
-  mounted() {
-    Object.assign(this.category, this.model)
+  watch: {
+    show(oldVal, val) {
+      this.category = {}
+      Object.assign(this.category, this.objModel)
+    },
   },
+  mounted() {},
 }
 </script>
 <style lang="css">

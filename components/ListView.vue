@@ -19,7 +19,7 @@
               v-for="item in items"
               :key="item.ID"
               class="card-wrap"
-              @contextmenu="show"
+              @contextmenu="show($event, item)"
             >
               <slot v-bind:item="item"></slot>
             </v-flex>
@@ -79,10 +79,11 @@ export default {
   },
   methods: {
     executeMenuAction(e) {
-      this.$emit(`on${e.title}`)
+      this.$emit(`on${e.title}`, e)
     },
-    show(e) {
+    show(e, item) {
       e.preventDefault()
+      this.$emit('setEditing', item)
       this.showMenu = false
       this.x = e.clientX
       this.y = e.clientY

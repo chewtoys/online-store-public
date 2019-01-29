@@ -8,7 +8,12 @@ _Server_
 
 _Client_
 
-4. Every listview visualization must be wrapped in common component that supports:
+0. What about lw element color?
+1. Fix image update
+
+- find component showing image not fileName
+
+1. Every listview visualization must be wrapped in common component that supports:
 
 - displaying errors
 - limiting menu actions
