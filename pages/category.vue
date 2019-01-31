@@ -104,9 +104,14 @@ export default {
     },
     onDelete(e) {
       this.actionVisible.Delete = true
+      this.updateModel = this.editingItem
     },
     onDeleteCategory() {
-      console.log(this.editingItem)
+      this.$store
+        .dispatch('categories/delete', this.editingItem.ID)
+        .then(() => {
+          this.actionVisible.Delete = false
+        })
     },
     chooseCategory(e) {
       console.log(e)
