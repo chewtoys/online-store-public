@@ -1,47 +1,16 @@
 <template>
-  <list-view
-    :Title="'Test items'"
-    :items="list"
-    @onCreate="onCreate"
-    @onUpdate="onUpdate"
-    :Create="true"
-    :Update="true"
-  >
-    <template slot-scope="slotProps">
-      <v-card>
-        <v-card-title>{{ slotProps.item.Title }}</v-card-title>
-      </v-card>
-    </template>
-  </list-view>
+  <file-input/>
 </template>
 <script>
-import ListView from '~/components/ListView.vue'
+import FileInput from '~/inputs/FileInput.vue'
 
 export default {
   data() {
-    return {
-      list: [
-        { ID: 1, Title: 'test obj 1' },
-        { ID: 2, Title: 'test obj 2' },
-        { ID: 3, Title: 'test obj 3' },
-        { ID: 3, Title: 'test obj 3' },
-        { ID: 3, Title: 'test obj 3' },
-        { ID: 3, Title: 'test obj 3' },
-        { ID: 3, Title: 'test obj 3' },
-        { ID: 3, Title: 'test obj 3' },
-      ],
-    }
+    return {}
   },
-  methods: {
-    onUpdate() {
-      console.log('catched onUpdate in parent')
-    },
-    onCreate() {
-      console.log('catched onCreate in parent')
-    },
-  },
+  methods: {},
   components: {
-    ListView,
+    FileInput,
   },
 }
 </script>

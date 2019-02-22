@@ -10,6 +10,7 @@
             <v-icon color="black">add</v-icon>
           </v-btn>
         </v-card-title>
+        <slot name="listPrepend"></slot>
         <v-container fluid>
           <v-layout row wrap>
             <v-flex

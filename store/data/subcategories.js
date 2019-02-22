@@ -1,22 +1,33 @@
 const subcategories = {
   namespaced: true,
   state: () => ({
-    subcategories: [],
+    subcategories: {},
     categoryID: null,
   }),
   mutations: {
-    setCategories(state, data) {
-      state.categories = data
+    get(state, data) {
+      state.subcategories = data
     },
-    addCategory(state, item) {
-      state.categories.push(item)
+    create(state, item) {
+      state.subcategories.Data.push(item)
+    },
+    update(state, item) {
+      var cat = state.subcategories.Data.filter(c => c.ID == item.ID)[0]
+      state.subcategories.Data[state.subcategories.Data.indexOf(cat)] = item
+    },
+    delete(state, id) {
+      var cat = state.subcategories.Data.filter(c => c.ID == id)[0]
+      var idxToDel = state.subcategories.Data.indexOf(cat)
+      state.subcategories.Data.splice(idxToDel, 1)
     },
   },
   actions: {
-    async getCategories({ commit }) {
+    async getAll({ commit }, categoryID) {
       try {
-        let { data } = await this.$axios.get('categories/get')
-        commit('setCategories', data)
+        let { data } = await this.$axios.get(
+          `subcategories/getAll?categoryID=${categoryID}`
+        )
+        commit('get', data)
       } catch (err) {
         console.log(err)
         throw err
@@ -24,19 +35,28 @@ const subcategories = {
     },
     async create({ commit }, item) {
       try {
-        let { data } = await this.$axios.post('categories/create', item)
-        commit('addCategory', {
-          FileID: item.FileID,
-          Color: item.Color,
-          ID: item.ID,
-          Title: item.Title,
-        })
-        debugger
+        let { data } = await this.$axios.post('subcategories/create', item)
+        commit('create', data)
       } catch (err) {
-        console.log(err)
-        debugger
+        throw err
+      }
+    },
+    async update({ commit }, item) {
+      try {
+        let { data } = await this.$axios.post('subcategories/update', item)
+        commit('update', data)
+      } catch (err) {
+        throw err
+      }
+    },
+    async delete({ commit }, id) {
+      try {
+        await this.$axios.post('subcategories/delete?id=' + id)
+        commit('delete', id)
+      } catch (err) {
+        throw err
       }
     },
   },
 }
-export default categories
+export default subcategories

@@ -103,6 +103,9 @@ export default function({ $axios }) {
         }
       )
   }
+  $axios.getImg = fileID => {
+    return $axios.defaults.baseURL + '/file/get?fileid=' + fileID
+  }
   $axios.postFile = (url, file) => {
     let data = new FormData()
     data.append('file1', file)

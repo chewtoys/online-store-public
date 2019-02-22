@@ -12,7 +12,9 @@ const categories = {
     },
     editCategory(state, item) {
       var cat = state.categories.Data.filter(c => c.ID == item.ID)[0]
+      console.log('before', cat)
       state.categories.Data[state.categories.Data.indexOf(cat)] = item
+      console.log('after', item)
     },
     deleteCategory(state, id) {
       var cat = state.categories.Data.filter(c => c.ID == id)[0]
@@ -23,7 +25,7 @@ const categories = {
   actions: {
     async getCategories({ commit }) {
       try {
-        let { data } = await this.$axios.get('categories/get')
+        let { data } = await this.$axios.get('categories/getAll')
         commit('setCategories', data)
         console.log(data)
       } catch (err) {
@@ -31,25 +33,28 @@ const categories = {
         throw err
       }
     },
+    async getByID({ commit }, categoryID) {
+      try {
+        let { data } = await this.$axios.get(`categories/get?id=${categoryID}`)
+        this.commit('navigation/setState', { category: data })
+      } catch (er) {
+        console.error(er)
+      }
+    },
     async create({ commit }, item) {
       try {
         let { data } = await this.$axios.post('categories/create', item)
-        commit('addCategory', {
-          FileID: item.FileID,
-          Color: item.Color,
-          ID: item.ID,
-          Title: item.Title,
-        })
+        commit('addCategory', data)
       } catch (err) {
-        console.error(err)
+        throw err
       }
     },
     async update({ commit }, item) {
       try {
         let { data } = await this.$axios.post('categories/update', item)
-        commit('editCategory', item)
+        commit('editCategory', data)
       } catch (err) {
-        console.error(err)
+        throw err
       }
     },
     async delete({ commit }, id) {
@@ -57,7 +62,7 @@ const categories = {
         await this.$axios.post('categories/delete?id=' + id)
         commit('deleteCategory', id)
       } catch (err) {
-        console.error(err)
+        throw err
       }
     },
   },

@@ -20,15 +20,16 @@
           @click.native="chooseCategory(slotProps.item)"
         >
           <v-img
+            contain
             class="category-image"
-            :src="'http://localhost:8100/api/file/get?fileid=' +  slotProps.item.FileID"
+            :src="'http://localhost:8100/api/file/get?fileid=' +  slotProps.item.ImageID"
           ></v-img>
           <v-card-title class="category-title" primary-title>
             <div>
               <div class="headline caterogy-header">{{slotProps.item.Title}}</div>
               <span
                 class="gray--text"
-              >{{slotProps.item.Description || 'some item description in future comes here'}}</span>
+              >{{slotProps.item.Description ? slotProps.item.Description.substring(0, 120) + '...' : 'no description provided for this category'}}</span>
             </div>
           </v-card-title>
         </v-card>
@@ -36,22 +37,16 @@
     </list-view>
     <v-progress-linear v-else :indeterminate="true"></v-progress-linear>
 
-    <category-form
-      :isNew="true"
-      v-on:close="actionVisible.Create = false"
-      :objModel="createModel"
-      :show="actionVisible.Create"
-      dialogTitle="Create category"
-    ></category-form>
-
-    <category-form
-      :isNew="false"
-      v-on:close="actionVisible.Update = false"
-      :objModel="updateModel"
-      :show="actionVisible.Update"
-      dialogTitle="Edit category"
-    ></category-form>
-
+    <l-form
+      :dialogTitle="actionVisible.Create ? 'Create category' : 'Update category'"
+      :model="formModel"
+      :show="actionVisible.Create || actionVisible.Update"
+      :fields="formFields"
+      :requestInProgress="requestInProgress"
+      @fileChange="onFileChange($event)"
+      @submit="onSubmit($event)"
+      @close="actionVisible.Create = actionVisible.Update = false"
+    />
     <confirm-dialog
       :show="actionVisible.Delete"
       title="Are you sure?"
@@ -63,18 +58,28 @@
 </template>
 
 <script>
-import CategoryForm from '~/Components/CategoryForm'
+import Form from '~/Components/Form'
 import ConfirmDialog from '~/Components/ConfirmDialog'
 import ListView from '~/components/ListView.vue'
 export default {
-  components: { CategoryForm, ListView, ConfirmDialog },
+  components: { 'l-form': Form, ListView, ConfirmDialog },
   data() {
     return {
       actionVisible: { Create: false, Update: false, Delete: false },
-      createModel: { Title: '', ImageID: null },
+      formModel: { Title: '', Description: '', ImageID: null, Image: null },
+      formFields: [
+        { _id: 0, label: 'Title', prop: 'Title', component: 'v-text-field' },
+        {
+          _id: 1,
+          label: 'Description',
+          prop: 'Description',
+          component: 'v-textarea',
+        },
+        { _id: 2, label: 'Image', prop: 'ImageID', component: 'file-input' },
+      ],
       categoriesLoaded: false,
       editingItem: null,
-      updateModel: null,
+      requestInProgress: false,
     }
   },
   computed: {
@@ -100,11 +105,10 @@ export default {
     },
     onUpdate(e) {
       this.actionVisible.Update = true
-      this.updateModel = this.editingItem
+      Object.assign(this.formModel, this.editingItem)
     },
     onDelete(e) {
       this.actionVisible.Delete = true
-      this.updateModel = this.editingItem
     },
     onDeleteCategory() {
       this.$store
@@ -114,7 +118,57 @@ export default {
         })
     },
     chooseCategory(e) {
-      console.log(e)
+      this.$store.commit('navigation/setState', { category: e })
+      this.$router.push(`category/${e.ID}`)
+    },
+    onFileChange(e) {
+      this.formModel.Image = e
+    },
+    onSubmit(e) {
+      this.requestInProgress = true
+      this.formModel.Title = e.Title
+      this.formModel.Description = e.Description
+      if (this.actionVisible.Create) this.updateCategory(true)
+      else this.updateCategory(false)
+    },
+    async updateCategory(isNew) {
+      var that = this
+      var saveImgPromise = this.formModel.Image
+        ? this.$axios.postFile('file/upload', this.formModel.Image)
+        : new Promise(resolve => {
+            resolve(0)
+          })
+      try {
+        var imageUploadResult = await saveImgPromise
+      } catch (e) {
+        console.error(e)
+        this.$store.commit('snackbar/show', {
+          message: 'An error has occured while uploading image: ' + e.Message,
+          btnColor: 'red',
+        })
+        this.requestInProgress = false
+        return
+      }
+      this.formModel.ImageID = imageUploadResult.data || null
+      var path = isNew ? 'categories/create' : 'categories/update'
+      try {
+        await this.$store.dispatch(path, this.formModel)
+        this.$store.commit('snackbar/show', {
+          message: this.actionVisible.Create
+            ? `Category created successfully`
+            : 'Category updated successfully',
+          btnColor: 'green',
+        })
+        this.actionVisible.Create = this.actionVisible.Update = false
+      } catch (e) {
+        console.error(e)
+        this.$store.commit('snackbar/show', {
+          message: 'An error has occured while processing: ' + e.Message,
+          btnColor: 'red',
+        })
+      } finally {
+        this.requestInProgress = false
+      }
     },
   },
   mounted() {
