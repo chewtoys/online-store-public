@@ -2,7 +2,7 @@ import axios from 'axios'
 import * as Cookies from 'js-cookie'
 import querystring from 'querystring'
 export default function({ $axios }) {
-  var baseDomain = 'http://localhost:8100'
+  var baseDomain = 'http://localhost:8200'
   $axios.defaults.baseURL = `${baseDomain}/api`
   let isRefreshing = false
   let refreshSubscribers = []
@@ -21,7 +21,7 @@ export default function({ $axios }) {
           isRefreshing = true
           $axios
             .post(
-              `${baseDomain}/token`,
+              `${baseDomain}/connect/token`,
               querystring.stringify({
                 grant_type: 'refresh_token',
                 refresh_token: Cookies.get('refresh-token'),
@@ -75,7 +75,7 @@ export default function({ $axios }) {
   })
   $axios.auth = (login, password) => {
     return $axios.post(
-      `${baseDomain}/token`,
+      `${baseDomain}/connect/token`,
       querystring.stringify({
         grant_type: 'password',
         username: login,
@@ -84,6 +84,7 @@ export default function({ $axios }) {
       {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: 'Basic Y2xpZW50OnNlY3JldA==',
         },
       }
     )
@@ -91,7 +92,7 @@ export default function({ $axios }) {
   $axios.authByToken = () => {
     if (Cookies.get('refresh-token'))
       return $axios.post(
-        `${baseDomain}/token`,
+        `${baseDomain}/connect/token`,
         querystring.stringify({
           grant_type: 'refresh_token',
           refresh_token: Cookies.get('refresh-token'),
