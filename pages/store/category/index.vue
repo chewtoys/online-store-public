@@ -19,11 +19,7 @@
           class="category-card"
           @click.native="chooseCategory(slotProps.item)"
         >
-          <v-img
-            contain
-            class="category-image"
-            :src="'http://localhost:8100/api/file/get?fileid=' +  slotProps.item.ImageID"
-          ></v-img>
+          <v-img contain class="category-image" :src="$axios.getImg(slotProps.item.ImageID)"></v-img>
           <v-card-title class="category-title" primary-title>
             <div>
               <div class="headline caterogy-header">{{slotProps.item.Title}}</div>

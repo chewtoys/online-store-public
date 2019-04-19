@@ -3,6 +3,7 @@ import account from './account/account'
 import categories from './data/categories'
 import subcategories from './data/subcategories'
 import snackbar from './snackbar'
+// import signalr from './signalr'
 import permissions from './account/permissions'
 import navigation from './buyer/navigation'
 const store = () =>
@@ -21,6 +22,7 @@ const store = () =>
     },
     modules: {
       account,
+      // signalr,
       snackbar,
       categories,
       subcategories,

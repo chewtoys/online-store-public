@@ -146,6 +146,7 @@ export default {
       .catch(function(err) {
         console.error(err)
       })
+    // this.$store.commit('signalr/startConnection')
 
     // this.$store.commit("snackbar/show", {
     //   message: "test snackbar",

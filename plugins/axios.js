@@ -100,6 +100,7 @@ export default function({ $axios }) {
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: 'Basic Y2xpZW50OnNlY3JldA==',
           },
         }
       )

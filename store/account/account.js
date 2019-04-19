@@ -21,17 +21,17 @@ const account = {
   mutations: {
     authenticate(state, data) {
       state.authenticated = true
+    },
+    setUserData(state, data) {
+      state.username = data.userName
       var rolePrefix = 'r_'
       state._definedRoles.forEach(role => {
         let roleWithoutPrefix = role.replace(rolePrefix, '')
-        if (Object.keys(data).indexOf(rolePrefix + role) !== -1)
+
+        if (Object.values(data.userRoles).indexOf(rolePrefix + role) !== -1)
           state.roles.push(roleWithoutPrefix)
       })
-      console.log('state.roles', state.roles)
-      state.username = data.username
-    },
-    setSpecialRoles(state, data) {
-      state.specialRoles = data
+      // state.specialRoles = data
     },
     logout(state) {
       state.authenticated = false
@@ -50,14 +50,14 @@ const account = {
         }
         // TODO: the same in auto authoriz
         let userInfo = await this.$axios.get('account/getUserInfo')
-        commit('setSpecialRoles', userInfo.data.SpecialPermissions)
+        commit('setUserData', userInfo.data)
       } catch (err) {
         console.log(err)
         throw err
       }
     },
     async logOut({ commit }) {
-      await this.$axios.post('account/logout')
+      await this.$axios.post('account/logOut')
       Cookies.remove('access-token')
       Cookies.remove('refresh-token')
       commit('logout')
@@ -68,8 +68,8 @@ const account = {
         Cookies.set('access-token', data.access_token)
         Cookies.set('refresh-token', data.refresh_token)
         let userInfo = await this.$axios.get('account/getUserInfo')
-        commit('setSpecialRoles', userInfo.data.SpecialPermissions)
         commit('authenticate', data)
+        commit('setUserData', userInfo.data)
       } catch (error) {
         // ignore
       }
