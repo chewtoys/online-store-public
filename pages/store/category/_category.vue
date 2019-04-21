@@ -7,9 +7,9 @@
       @onCreate="onCreate"
       @onUpdate="onUpdate"
       @onDelete="onDelete"
-      :Create="list.Create"
-      :Update="list.Update"
-      :Delete="list.Delete"
+      :Create="list.create"
+      :Update="list.update"
+      :Delete="list.delete"
       @setEditing="setEditing"
     >
       <template slot="listPrepend">

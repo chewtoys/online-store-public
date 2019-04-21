@@ -23,6 +23,7 @@ export default {
     ],
   },
   modules: ['@nuxtjs/axios'],
+  mode: 'spa',
   plugins: ['~/plugins/vuetify.js', '~/plugins/axios.js'],
   axios: {
     // proxyHeaders: false

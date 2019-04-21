@@ -1,22 +1,9 @@
 <template>
   <v-app>
-    <v-navigation-drawer :clipped="true" v-model="drawer" fixed app>
-      <v-list>
-        <v-list-tile router :to="item.to" :key="i" v-for="(item, i) in items" exact>
-          <v-list-tile-action>
-            <v-icon v-html="item.icon"></v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title v-text="item.title"></v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-group prepend-icon="settings" v-if="serviceItems.length">
-          <v-list-tile slot="activator">
-            <v-list-tile-title>Service</v-list-tile-title>
-          </v-list-tile>
-
-          <v-list-tile router :to="item.to" v-for="(item, i) in serviceItems" :key="i">
+    <div v-if="loaded">
+      <v-navigation-drawer :clipped="true" v-model="drawer" fixed app>
+        <v-list>
+          <v-list-tile router :to="item.to" :key="i" v-for="(item, i) in items" exact>
             <v-list-tile-action>
               <v-icon v-html="item.icon"></v-icon>
             </v-list-tile-action>
@@ -24,59 +11,77 @@
               <v-list-tile-title v-text="item.title"></v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-        </v-list-group>
-      </v-list>
-    </v-navigation-drawer>
-    <v-toolbar fixed app clipped-left>
-      <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
-      <img width="32" src="logo.svg">
 
-      <v-toolbar-title v-text="title"></v-toolbar-title>
-      <v-spacer></v-spacer>
-      <div>
-        <span style="cursor:pointer" v-if="!authData.authenticated" @click="showAuth = true">
-          <v-btn icon>
-            <v-icon>account_circle</v-icon>
-          </v-btn>Log in
-        </span>
-        
-        <span v-if="authData.authenticated">
-          {{authData.username}}
-          <v-btn icon @click="logout" v-if="authData.authenticated">
-            <v-icon>exit_to_app</v-icon>
-          </v-btn>
-        </span>
+          <v-list-group prepend-icon="settings" v-if="serviceItems.length">
+            <v-list-tile slot="activator">
+              <v-list-tile-title>Service</v-list-tile-title>
+            </v-list-tile>
 
-        <auth-form :show="showAuth" v-on:close="showAuth = false"/>
-      </div>
-    </v-toolbar>
-    <v-content>
-      <v-container>
-        <nuxt/>
-      </v-container>
-    </v-content>
-    <v-navigation-drawer temporary :right="right" v-model="rightDrawer" fixed>
-      <v-list>
-        <v-list-tile @click.native="right = !right">
-          <v-list-tile-action>
-            <v-icon light>compare_arrows</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title>Switch drawer (click me)</v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
-    <v-snackbar
-      v-model="snackbar.show"
-      :bottom="true"
-      :multi-line="snackbar.multiline"
-      :timeout="snackbar.timeout"
-    >
-      {{ snackbar.message }}
-      <v-btn :color="snackbar.btnColor" flat @click="hideSnackbar">Close</v-btn>
-    </v-snackbar>
-    <v-footer :fixed="fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+            <v-list-tile router :to="item.to" v-for="(item, i) in serviceItems" :key="i">
+              <v-list-tile-action>
+                <v-icon v-html="item.icon"></v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title v-text="item.title"></v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
+        </v-list>
+      </v-navigation-drawer>
+      <v-toolbar fixed app clipped-left>
+        <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
+        <img width="32" src="logo.svg">
+
+        <v-toolbar-title v-text="title"></v-toolbar-title>
+        <v-spacer></v-spacer>
+        <div>
+          <span style="cursor:pointer" v-if="!authData.authenticated" @click="showAuth = true">
+            <v-btn icon>
+              <v-icon>account_circle</v-icon>
+            </v-btn>Log in
+          </span>
+
+          <span v-if="authData.authenticated">
+            {{authData.username}}
+            <v-btn icon @click="logout" v-if="authData.authenticated">
+              <v-icon>exit_to_app</v-icon>
+            </v-btn>
+          </span>
+
+          <auth-form :show="showAuth" v-on:close="showAuth = false"/>
+        </div>
+      </v-toolbar>
+      <v-content>
+        <v-container>
+          <nuxt/>
+        </v-container>
+      </v-content>
+      <v-navigation-drawer temporary :right="right" v-model="rightDrawer" fixed>
+        <v-list>
+          <v-list-tile @click.native="right = !right">
+            <v-list-tile-action>
+              <v-icon light>compare_arrows</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-title>Switch drawer (click me)</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-navigation-drawer>
+      <v-snackbar
+        v-model="snackbar.show"
+        :bottom="true"
+        :multi-line="snackbar.multiline"
+        :timeout="snackbar.timeout"
+      >
+        {{ snackbar.message }}
+        <v-btn :color="snackbar.btnColor" flat @click="hideSnackbar">Close</v-btn>
+      </v-snackbar>
+      <v-footer :fixed="fixed" app>
+        <span>&copy; {{ new Date().getFullYear() }}</span>
+      </v-footer>
+    </div>
+    <v-container d-flex justify-center v-else>
+      <v-progress-circular class="app-preloader" align-center :size="50" indeterminate></v-progress-circular>
+    </v-container>
   </v-app>
 </template>
 
@@ -117,6 +122,7 @@ export default {
     return {
       showAuth: false,
       clipped: false,
+      loaded: false,
       drawer: true,
       fixed: false,
       items: [
@@ -131,21 +137,9 @@ export default {
     }
   },
   mounted() {
-    this.$store
-      .dispatch('account/authByRefresh')
-      .then(() => {
-        if (!this.$store.state.account.authenticated)
-          this.$store.commit('snackbar/show', {
-            message:
-              "You have not been here for too long. \n We're sorry you need to log in again :(",
-            btnColor: 'green',
-            timeout: 4000,
-            multiline: true,
-          })
-      })
-      .catch(function(err) {
-        console.error(err)
-      })
+    this.$store.dispatch('account/authByRefresh').finally(() => {
+      this.loaded = true
+    })
     // this.$store.commit('signalr/startConnection')
 
     // this.$store.commit("snackbar/show", {
@@ -157,6 +151,9 @@ export default {
 }
 </script>
 <style lang="scss">
+.app-preloader {
+  align-self: center;
+}
 .container {
   min-width: 100%;
   padding: 0.8rem;

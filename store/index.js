@@ -16,8 +16,15 @@ const store = () =>
       toggleSidebar(state) {
         state.sidebar = !state.sidebar
       },
+
       inc(state) {
         state.counter++
+      },
+    },
+    actions: {
+      async nuxtServerInit({ commit }, { app }) {
+        debugger
+        await app.$axios.authByToken()
       },
     },
     modules: {
