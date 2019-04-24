@@ -7,9 +7,9 @@
       @onCreate="onCreate"
       @onUpdate="onUpdate"
       @onDelete="onDelete"
-      :Create="list.create"
-      :Update="list.update"
-      :Delete="list.delete"
+      :Create="list.Create"
+      :Update="list.Update"
+      :Delete="list.Delete"
       @setEditing="setEditing"
     >
       <template slot-scope="slotProps">
