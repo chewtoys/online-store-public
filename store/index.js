@@ -6,6 +6,7 @@ import snackbar from './snackbar'
 // import signalr from './signalr'
 import permissions from './account/permissions'
 import navigation from './buyer/navigation'
+import menu from './menu'
 const store = () =>
   new Vuex.Store({
     state: {
@@ -31,6 +32,7 @@ const store = () =>
       account,
       // signalr,
       snackbar,
+      menu,
       categories,
       subcategories,
       navigation,

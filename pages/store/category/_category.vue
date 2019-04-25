@@ -1,50 +1,37 @@
 <template>
   <v-layout column>
     <list-view
-      v-if="listDataLoaded"
       :Title="categoryTitle"
       :items="list.Data"
+      :totalItems="list.Total"
+      :totalPages="list.TotalPages"
+      :page="list.Page"
+      :dataLoaded="dataLoaded"
       @onCreate="onCreate"
       @onUpdate="onUpdate"
       @onDelete="onDelete"
-      :Create="list.create"
-      :Update="list.update"
-      :Delete="list.delete"
+      @onSearch="onSearch"
+      @onPrevPage="onPrevPage"
+      @onNextPage="onNextPage"
+      :Create="list.Create"
+      :Update="list.Update"
+      :Delete="list.Delete"
       @setEditing="setEditing"
     >
-      <template slot="listPrepend">
-        <v-layout row class="category-container">
-          <v-flex xs6 class="image-container">
-            <v-img
-              contain
-              height="25rem"
-              class="full-category-image"
-              :src="$axios.getImg(categoryImg)"
-            />
-          </v-flex>
-          <v-flex xs6>{{category.Description}}</v-flex>
-        </v-layout>
-      </template>
       <template slot-scope="slotProps">
-        <v-card
-          :color="slotProps.item.Color"
-          hover
-          class="category-card"
-          @click.native="chooseCategory(slotProps.item)"
-        >
-          <v-img class="category-image" :src="$axios.getImg(slotProps.item.ImageID)"></v-img>
+        <v-card hover class="category-card" @click.native="chooseCategory(slotProps.item)">
+          <v-img contain class="category-image" :src="$axios.getImg(slotProps.item.ImageID)"></v-img>
           <v-card-title class="category-title" primary-title>
             <div>
               <div class="headline caterogy-header">{{slotProps.item.Title}}</div>
               <span
                 class="gray--text"
-              >{{slotProps.item.Description ? slotProps.item.Description.substring(0, 120) + '...' : 'no description provided for this subcategory'}}</span>
+              >{{slotProps.item.Description ? slotProps.item.Description.substring(0, 120) + '...' : 'no description provided for this category'}}</span>
             </div>
           </v-card-title>
         </v-card>
       </template>
     </list-view>
-    <v-progress-linear v-else :indeterminate="true"></v-progress-linear>
     <l-form
       :dialogTitle="actionVisible.Create ? 'Create subcategory' : 'Update subcategory'"
       :model="formModel"
@@ -58,9 +45,9 @@
     <confirm-dialog
       :show="actionVisible.Delete"
       title="Are you sure?"
-      text="This action will delete category and all nested items will become uncategorized."
+      text="This action will delete subcategory and all its items will become uncategorized."
       v-on:cancel="actionVisible.Delete = false"
-      v-on:confirm="onDeleteCategory"
+      v-on:confirm="onDeleteConfirm"
     ></confirm-dialog>
   </v-layout>
 </template>
@@ -73,6 +60,7 @@ export default {
   components: { 'l-form': Form, ListView, ConfirmDialog },
   data() {
     return {
+      dataLoaded: false,
       actionVisible: { Create: false, Update: false, Delete: false },
       formModel: {
         Title: '',
@@ -94,14 +82,16 @@ export default {
       listDataLoaded: false,
       editingItem: null,
       requestInProgress: false,
+      queryFilter: {
+        page: 1,
+        search: '',
+        pageSize: 6,
+      },
     }
   },
   computed: {
     categoryTitle() {
       return this.category ? this.category.Title || '' : ''
-    },
-    categoryImg() {
-      return this.category ? this.category.ImageID || '' : ''
     },
     category() {
       return this.$store.state.navigation.category
@@ -133,7 +123,28 @@ export default {
     onDelete(e) {
       this.actionVisible.Delete = true
     },
-    onDeleteCategory() {
+    async onSearch(searchStr) {
+      this.queryFilter.search = searchStr
+      await this.requestData()
+    },
+    async onPrevPage(e) {
+      if (this.queryFilter.page == 1) return
+      this.queryFilter.page--
+      await this.requestData()
+    },
+    async requestData() {
+      this.dataLoaded = false
+      this.queryFilter.category = this.$route.params.category
+      await this.$store.dispatch('subcategories/getAll', this.queryFilter)
+      this.queryFilter.page = this.list.Page
+      this.dataLoaded = true
+    },
+    async onNextPage(e) {
+      if (this.queryFilter.page == this.list.TotalPages) return
+      this.queryFilter.page++
+      await this.requestData()
+    },
+    onDeleteConfirm() {
       this.$store
         .dispatch('subcategories/delete', this.editingItem.ID)
         .then(() => {
@@ -193,17 +204,18 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     // this.category = this.$store.state.navigation.category
     if (!this.category) {
       this.$store.dispatch('categories/getByID', this.$route.params.category)
     }
+    await this.requestData()
     var that = this
-    this.$store
-      .dispatch('subcategories/getAll', this.$route.params.category)
-      .then(function() {
-        that.listDataLoaded = true
-      })
+    // this.$store
+    //   .dispatch('subcategories/getAll', this.$route.params.category)
+    //   .then(function() {
+    //     that.listDataLoaded = true
+    //   })
   },
 }
 </script>

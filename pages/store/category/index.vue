@@ -1,24 +1,25 @@
 <template>
   <v-layout row>
     <list-view
-      v-if="categoriesLoaded"
       :Title="'Categories'"
       :items="list.Data"
+      :totalItems="list.Total"
+      :totalPages="list.TotalPages"
+      :page="list.Page"
+      :dataLoaded="categoriesLoaded"
       @onCreate="onCreate"
       @onUpdate="onUpdate"
       @onDelete="onDelete"
+      @onSearch="onSearch"
+      @onPrevPage="onPrevPage"
+      @onNextPage="onNextPage"
       :Create="list.Create"
       :Update="list.Update"
       :Delete="list.Delete"
       @setEditing="setEditing"
     >
       <template slot-scope="slotProps">
-        <v-card
-          :color="slotProps.item.Color"
-          hover
-          class="category-card"
-          @click.native="chooseCategory(slotProps.item)"
-        >
+        <v-card hover class="category-card" @click.native="chooseCategory(slotProps.item)">
           <v-img contain class="category-image" :src="$axios.getImg(slotProps.item.ImageID)"></v-img>
           <v-card-title class="category-title" primary-title>
             <div>
@@ -31,8 +32,6 @@
         </v-card>
       </template>
     </list-view>
-    <v-progress-linear v-else :indeterminate="true"></v-progress-linear>
-
     <l-form
       :dialogTitle="actionVisible.Create ? 'Create category' : 'Update category'"
       :model="formModel"
@@ -76,6 +75,11 @@ export default {
       categoriesLoaded: false,
       editingItem: null,
       requestInProgress: false,
+      queryFilter: {
+        page: 1,
+        search: '',
+        pageSize: 6,
+      },
     }
   },
   computed: {
@@ -84,6 +88,14 @@ export default {
     },
   },
   methods: {
+    _setDefaultFormModel() {
+      this.formModel = {
+        Title: '',
+        Description: '',
+        ImageID: null,
+        Image: null,
+      }
+    },
     getActiveDialog(dialogName) {
       var action = this.menuActions.filter(item => item.title === dialogName)
       if (action) return action[0].active
@@ -97,6 +109,7 @@ export default {
       this.editingItem = item
     },
     onCreate() {
+      this._setDefaultFormModel()
       this.actionVisible.Create = true
     },
     onUpdate(e) {
@@ -105,6 +118,26 @@ export default {
     },
     onDelete(e) {
       this.actionVisible.Delete = true
+    },
+    async onSearch(searchStr) {
+      this.queryFilter.search = searchStr
+      await this.requestData()
+    },
+    async onPrevPage(e) {
+      if (this.queryFilter.page == 1) return
+      this.queryFilter.page--
+      await this.requestData()
+    },
+    async requestData() {
+      this.categoriesLoaded = false
+      await this.$store.dispatch('categories/getCategories', this.queryFilter)
+      this.queryFilter.page = this.list.Page
+      this.categoriesLoaded = true
+    },
+    async onNextPage(e) {
+      if (this.queryFilter.page == this.list.TotalPages) return
+      this.queryFilter.page++
+      await this.requestData()
     },
     onDeleteCategory() {
       this.$store
@@ -169,9 +202,11 @@ export default {
   },
   mounted() {
     var that = this
-    this.$store.dispatch('categories/getCategories').then(function() {
-      that.categoriesLoaded = true
-    })
+    this.$store
+      .dispatch('categories/getCategories', this.queryFilter)
+      .then(function() {
+        that.categoriesLoaded = true
+      })
   },
 }
 </script>
@@ -186,16 +221,18 @@ export default {
 }
 .category-title {
   padding-top: 0.8rem;
+  display: flex;
   padding-bottom: 0.7rem;
+  background: lighten(gray, 48%);
 }
 .category-card {
   padding-top: 0.8rem;
-  background-color: lighten(red, 50%);
 }
 .category-image {
   height: 200px;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 </style>
 

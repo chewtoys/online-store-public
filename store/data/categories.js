@@ -23,9 +23,14 @@ const categories = {
     },
   },
   actions: {
-    async getCategories({ commit }) {
+    async getCategories({ commit }, filter) {
       try {
-        let { data } = await this.$axios.get('categories/getAll')
+        filter = filter || {}
+        let { data } = await this.$axios.get(
+          `categories/getAll?search=${filter.search}&page=${
+            filter.page
+          }&pageSize=${filter.pageSize}`
+        )
         commit('setCategories', data)
         console.log(data)
       } catch (err) {

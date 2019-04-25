@@ -12,19 +12,31 @@
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-list-group prepend-icon="settings" v-if="serviceItems.length">
-            <v-list-tile slot="activator">
-              <v-list-tile-title>Service</v-list-tile-title>
+          <v-list-group prepend-icon="category" v-if="serviceItems.length">
+            <v-list-tile router to="/store/category" slot="activator">
+              <v-list-tile-title>Categories</v-list-tile-title>
             </v-list-tile>
-
-            <v-list-tile router :to="item.to" v-for="(item, i) in serviceItems" :key="i">
+            <v-list-group sub-group v-for="(item, i) in categoryItems" :key="i">
+              <v-list-tile router :to="item.to" slot="activator">
+                <v-list-tile-title>{{item.title}}</v-list-tile-title>
+              </v-list-tile>
+              <v-list-tile router :to="nest.to" v-for="(nest, i) in item.nested" :key="i">
+                <v-list-tile-action>
+                  <v-icon v-html="nest.icon"></v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title v-text="nest.Title"></v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </v-list-group>
+            <!-- <v-list-tile router :to="item.to" v-for="(item, i) in categoryItems" :key="i">
               <v-list-tile-action>
                 <v-icon v-html="item.icon"></v-icon>
               </v-list-tile-action>
               <v-list-tile-content>
                 <v-list-tile-title v-text="item.title"></v-list-tile-title>
               </v-list-tile-content>
-            </v-list-tile>
+            </v-list-tile>-->
           </v-list-group>
         </v-list>
       </v-navigation-drawer>
@@ -56,7 +68,7 @@
           <nuxt/>
         </v-container>
       </v-content>
-      <v-navigation-drawer temporary :right="right" v-model="rightDrawer" fixed>
+      <!-- <v-navigation-drawer temporary :right="right" v-model="rightDrawer" fixed>
         <v-list>
           <v-list-tile @click.native="right = !right">
             <v-list-tile-action>
@@ -65,7 +77,7 @@
             <v-list-tile-title>Switch drawer (click me)</v-list-tile-title>
           </v-list-tile>
         </v-list>
-      </v-navigation-drawer>
+      </v-navigation-drawer>-->
       <v-snackbar
         v-model="snackbar.show"
         :bottom="true"
@@ -117,6 +129,16 @@ export default {
     logout: function() {
       this.$store.dispatch('account/logOut')
     },
+    initMenu() {
+      let menuItems = this.$store.state.menu.items
+      menuItems.forEach(category => {
+        this.categoryItems.push({
+          title: category.Title,
+          to: `/store/category/${category.ID}`,
+          nested: category.SubItems,
+        })
+      })
+    },
   },
   data() {
     return {
@@ -125,6 +147,7 @@ export default {
       loaded: false,
       drawer: true,
       fixed: false,
+      categoryItems: [],
       items: [
         { icon: 'apps', title: 'Welcome', to: '/' },
         { icon: 'category', title: 'Categories', to: '/store/category' },
@@ -136,10 +159,11 @@ export default {
       title: "Leoneed's",
     }
   },
-  mounted() {
-    this.$store.dispatch('account/authByRefresh').finally(() => {
-      this.loaded = true
-    })
+  async mounted() {
+    await this.$store.dispatch('account/authByRefresh')
+    await this.$store.dispatch('menu/getMenu')
+    this.initMenu()
+    this.loaded = true
     // this.$store.commit('signalr/startConnection')
 
     // this.$store.commit("snackbar/show", {
@@ -151,6 +175,9 @@ export default {
 }
 </script>
 <style lang="scss">
+html {
+  overflow-y: auto;
+}
 .app-preloader {
   align-self: center;
 }

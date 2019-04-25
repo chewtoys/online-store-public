@@ -45,51 +45,6 @@ export default {
     onFileChange(e) {
       this.$emit('fileChange', e)
     },
-    create() {
-      // var that = this
-      // this.$axios
-      //   .postFile('file/upload', this.category.Image)
-      //   .then(function(uploadResult) {
-      //     that.category.ImageID = uploadResult.data
-      //     that.$store.dispatch('categories/create', {
-      //       Title: that.category.Title,
-      //       Description: that.category.Description,
-      //       ImageID: that.category.ImageID,
-      //       Color: that.category.Color,
-      //     })
-      //     that.$emit('close')
-      //   })
-    },
-    update() {
-      // var that = this
-      // if (this.fileChanged)
-      //   var promise = this.$axios.postFile('file/upload', this.category.Image)
-      // if (promise)
-      //   promise.then(function(uploadResult) {
-      //     that.category.ImageID = uploadResult.data
-      //     that.$store
-      //       .dispatch('categories/update', {
-      //         ID: that.category.ID,
-      //         Title: that.category.Title,
-      //         Description: that.category.Description,
-      //         ImageID: that.category.ImageID,
-      //         Color: that.category.Color,
-      //         RowVersion: that.category.RowVersion,
-      //       })
-      //       .then(() => that.$emit('close'))
-      //   })
-      // else
-      //   this.$store
-      //     .dispatch('categories/update', {
-      //       ID: that.category.ID,
-      //       Title: that.category.Title,
-      //       Description: that.category.Description,
-      //       ImageID: that.category.ImageID,
-      //       Color: that.category.Color,
-      //       RowVersion: that.category.RowVersion,
-      //     })
-      //     .then(() => that.$emit('close'))
-    },
     submit() {
       this.$emit('submit', this.localData)
     },

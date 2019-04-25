@@ -22,10 +22,12 @@ const subcategories = {
     },
   },
   actions: {
-    async getAll({ commit }, categoryID) {
+    async getAll({ commit }, filter) {
       try {
         let { data } = await this.$axios.get(
-          `subcategories/getAll?categoryID=${categoryID}`
+          `subcategories/getAll?search=${filter.search}&page=${
+            filter.page
+          }&pageSize=${filter.pageSize}&categoryID=${filter.category}`
         )
         commit('get', data)
       } catch (err) {
