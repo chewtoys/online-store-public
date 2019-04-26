@@ -1,33 +1,33 @@
-const subcategories = {
+const products = {
   namespaced: true,
   state: () => ({
-    subcategories: {},
+    products: {},
     categoryID: null,
   }),
   mutations: {
     get(state, data) {
-      state.subcategories = data
+      state.products = data
     },
     create(state, item) {
-      state.subcategories.Data.push(item)
+      state.products.Data.push(item)
     },
     update(state, item) {
-      var cat = state.subcategories.Data.filter(c => c.ID == item.ID)[0]
-      state.subcategories.Data[state.subcategories.Data.indexOf(cat)] = item
+      var cat = state.products.Data.filter(c => c.ID == item.ID)[0]
+      state.products.Data[state.products.Data.indexOf(cat)] = item
     },
     delete(state, id) {
-      var cat = state.subcategories.Data.filter(c => c.ID == id)[0]
-      var idxToDel = state.subcategories.Data.indexOf(cat)
-      state.subcategories.Data.splice(idxToDel, 1)
+      var cat = state.products.Data.filter(c => c.ID == id)[0]
+      var idxToDel = state.products.Data.indexOf(cat)
+      state.products.Data.splice(idxToDel, 1)
     },
   },
   actions: {
     async getAll({ commit }, filter) {
       try {
         let { data } = await this.$axios.get(
-          `subcategories/getAll?search=${filter.search}&page=${
+          `products/getAll?search=${filter.search}&page=${
             filter.page
-          }&pageSize=${filter.pageSize}&categoryLink=${filter.link}`
+          }&pageSize=${filter.pageSize}&subCategoryLink=${filter.link}`
         )
         commit('get', data)
       } catch (err) {
@@ -35,9 +35,9 @@ const subcategories = {
         throw err
       }
     },
-    async getByLink({ commit }, link) {
+    async getByLink({ commit }, subCategoryID) {
       try {
-        let { data } = await this.$axios.get(`subcategories/get?link=${link}`)
+        let { data } = await this.$axios.get(`products/get?id=${subCategoryID}`)
         this.commit('navigation/setState', { subCategory: data })
       } catch (er) {
         console.error(er)
@@ -45,7 +45,7 @@ const subcategories = {
     },
     async create({ commit }, item) {
       try {
-        let { data } = await this.$axios.post('subcategories/create', item)
+        let { data } = await this.$axios.post('products/create', item)
         commit('create', data)
       } catch (err) {
         throw err
@@ -53,7 +53,7 @@ const subcategories = {
     },
     async update({ commit }, item) {
       try {
-        let { data } = await this.$axios.post('subcategories/update', item)
+        let { data } = await this.$axios.post('products/update', item)
         commit('update', data)
       } catch (err) {
         throw err
@@ -61,7 +61,7 @@ const subcategories = {
     },
     async delete({ commit }, id) {
       try {
-        await this.$axios.post('subcategories/delete?id=' + id)
+        await this.$axios.post('products/delete?id=' + id)
         commit('delete', id)
       } catch (err) {
         throw err
@@ -69,4 +69,4 @@ const subcategories = {
     },
   },
 }
-export default subcategories
+export default products

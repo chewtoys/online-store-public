@@ -1,6 +1,7 @@
 import Vuex from 'vuex'
 import account from './account/account'
 import categories from './data/categories'
+import products from './data/products'
 import subcategories from './data/subcategories'
 import snackbar from './snackbar'
 // import signalr from './signalr'
@@ -22,12 +23,7 @@ const store = () =>
         state.counter++
       },
     },
-    actions: {
-      async nuxtServerInit({ commit }, { app }) {
-        debugger
-        await app.$axios.authByToken()
-      },
-    },
+    actions: {},
     modules: {
       account,
       // signalr,
@@ -36,6 +32,7 @@ const store = () =>
       categories,
       subcategories,
       navigation,
+      products,
       permissions,
     },
   })

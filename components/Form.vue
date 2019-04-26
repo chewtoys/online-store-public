@@ -14,7 +14,9 @@
         :style="field.component == 'file-input' ? 'width:100%' : ''"
         :fileGuid="field.component == 'file-input' ? localData[field.prop] : undefined"
         :auto-grow="field.component == 'v-textarea' ? true : undefined"
+        :model="field.component == 'icon-picker' ? localData[field.prop] : undefined"
         @fileChange="onFileChange($event)"
+        @change="onChange($event, field.prop)"
       ></component>
     </v-flex>
   </dialog-form>
@@ -22,11 +24,13 @@
 
 <script>
 import FileInput from '~/inputs/FileInput'
+import IconPicker from '~/inputs/IconPicker'
 import DialogForm from '~/Components/DialogForm.vue'
 
 export default {
   components: {
     FileInput,
+    IconPicker,
     DialogForm,
   },
   props: {
@@ -44,6 +48,9 @@ export default {
   methods: {
     onFileChange(e) {
       this.$emit('fileChange', e)
+    },
+    onChange(val, prop) {
+      this.localData[prop] = val
     },
     submit() {
       this.$emit('submit', this.localData)

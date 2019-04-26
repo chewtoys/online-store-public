@@ -61,16 +61,25 @@ export default {
   data() {
     return {
       actionVisible: { Create: false, Update: false, Delete: false },
-      formModel: { Title: '', Description: '', ImageID: null, Image: null },
+      formModel: {
+        Title: '',
+        Description: '',
+        ImageID: null,
+        Image: null,
+        Icon: 'computer',
+        Link: '',
+      },
       formFields: [
         { _id: 0, label: 'Title', prop: 'Title', component: 'v-text-field' },
+        { _id: 1, label: 'Link', prop: 'Link', component: 'v-text-field' },
+        { _id: 2, label: 'Icon', prop: 'Icon', component: 'icon-picker' },
         {
-          _id: 1,
+          _id: 3,
           label: 'Description',
           prop: 'Description',
           component: 'v-textarea',
         },
-        { _id: 2, label: 'Image', prop: 'ImageID', component: 'file-input' },
+        { _id: 4, label: 'Image', prop: 'ImageID', component: 'file-input' },
       ],
       categoriesLoaded: false,
       editingItem: null,
@@ -92,6 +101,7 @@ export default {
       this.formModel = {
         Title: '',
         Description: '',
+        Link: '',
         ImageID: null,
         Image: null,
       }
@@ -148,15 +158,16 @@ export default {
     },
     chooseCategory(e) {
       this.$store.commit('navigation/setState', { category: e })
-      this.$router.push(`category/${e.ID}`)
+      this.$router.push(`/store/${e.Link}`)
     },
     onFileChange(e) {
       this.formModel.Image = e
     },
     onSubmit(e) {
       this.requestInProgress = true
-      this.formModel.Title = e.Title
-      this.formModel.Description = e.Description
+      this.formFields.forEach(item => {
+        this.formModel[item['prop']] = e[item['prop']]
+      })
       if (this.actionVisible.Create) this.updateCategory(true)
       else this.updateCategory(false)
     },

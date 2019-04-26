@@ -3,40 +3,35 @@
     <div v-if="loaded">
       <v-navigation-drawer :clipped="true" v-model="drawer" fixed app>
         <v-list>
-          <v-list-tile router :to="item.to" :key="i" v-for="(item, i) in items" exact>
+          <v-list-tile router to="/">
             <v-list-tile-action>
-              <v-icon v-html="item.icon"></v-icon>
+              <v-icon>home</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title v-text="item.title"></v-list-tile-title>
+              <v-list-tile-title>Home</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-list-group prepend-icon="category" v-if="serviceItems.length">
-            <v-list-tile router to="/store/category" slot="activator">
+          <v-list-group prepend-icon="category">
+            <v-list-tile router to="/store" slot="activator">
               <v-list-tile-title>Categories</v-list-tile-title>
             </v-list-tile>
             <v-list-group sub-group v-for="(item, i) in categoryItems" :key="i">
-              <v-list-tile router :to="item.to" slot="activator">
+              <v-list-tile slot="activator">
                 <v-list-tile-title>{{item.title}}</v-list-tile-title>
+                <v-list-tile-action>
+                  <v-icon>{{item.icon}}</v-icon>
+                </v-list-tile-action>
               </v-list-tile>
               <v-list-tile router :to="nest.to" v-for="(nest, i) in item.nested" :key="i">
                 <v-list-tile-action>
-                  <v-icon v-html="nest.icon"></v-icon>
+                  <v-icon v-html="nest.Icon"></v-icon>
                 </v-list-tile-action>
                 <v-list-tile-content>
                   <v-list-tile-title v-text="nest.Title"></v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
             </v-list-group>
-            <!-- <v-list-tile router :to="item.to" v-for="(item, i) in categoryItems" :key="i">
-              <v-list-tile-action>
-                <v-icon v-html="item.icon"></v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title v-text="item.title"></v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>-->
           </v-list-group>
         </v-list>
       </v-navigation-drawer>
@@ -132,12 +127,23 @@ export default {
     initMenu() {
       let menuItems = this.$store.state.menu.items
       menuItems.forEach(category => {
-        this.categoryItems.push({
+        var item = {
           title: category.Title,
-          to: `/store/category/${category.ID}`,
-          nested: category.SubItems,
+          icon: category.Icon,
+          to: `/store/${category.ID}`,
+          nested: category.SubItems.map(item => ({
+            Title: item.Title,
+            to: `/store/${category.Link}/${item.Link}`,
+            Icon: item.Icon,
+          })),
+        }
+        item.nested.unshift({
+          Title: 'All',
+          to: `/store/${category.Link}`,
         })
+        this.categoryItems.push(item)
       })
+      console.log('categoryItems', this.categoryItems)
     },
   },
   data() {
@@ -149,7 +155,7 @@ export default {
       fixed: false,
       categoryItems: [],
       items: [
-        { icon: 'apps', title: 'Welcome', to: '/' },
+        { icon: 'home', title: 'Welcome', to: '/' },
         { icon: 'category', title: 'Categories', to: '/store/category' },
         { icon: 'bubble_chart', title: 'Inspire', to: '/inspire' },
       ],

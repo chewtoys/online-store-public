@@ -38,9 +38,9 @@ const categories = {
         throw err
       }
     },
-    async getByID({ commit }, categoryID) {
+    async getByLink({ commit }, link) {
       try {
-        let { data } = await this.$axios.get(`categories/get?id=${categoryID}`)
+        let { data } = await this.$axios.get(`categories/get?link=${link}`)
         this.commit('navigation/setState', { category: data })
       } catch (er) {
         console.error(er)

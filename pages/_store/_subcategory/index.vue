@@ -67,17 +67,19 @@ export default {
         Description: '',
         ImageID: null,
         Image: null,
-        CategoryID: this.$route.params.category,
+        Link: '',
       },
       formFields: [
         { _id: 0, label: 'Title', prop: 'Title', component: 'v-text-field' },
+        { _id: 4, label: 'Icon', prop: 'Icon', component: 'icon-picker' },
+        { _id: 1, label: 'Link', prop: 'Link', component: 'v-text-field' },
         {
-          _id: 1,
+          _id: 2,
           label: 'Description',
           prop: 'Description',
           component: 'v-textarea',
         },
-        { _id: 2, label: 'Image', prop: 'ImageID', component: 'file-input' },
+        { _id: 3, label: 'Image', prop: 'ImageID', component: 'file-input' },
       ],
       listDataLoaded: false,
       editingItem: null,
@@ -92,6 +94,9 @@ export default {
   computed: {
     categoryTitle() {
       return this.category ? this.category.Title || '' : ''
+    },
+    categoryID() {
+      return this.category ? this.category.ID || '' : ''
     },
     category() {
       return this.$store.state.navigation.category
@@ -134,7 +139,7 @@ export default {
     },
     async requestData() {
       this.dataLoaded = false
-      this.queryFilter.category = this.$route.params.category
+      this.queryFilter.link = this.$route.params.subcategory
       await this.$store.dispatch('subcategories/getAll', this.queryFilter)
       this.queryFilter.page = this.list.Page
       this.dataLoaded = true
@@ -152,15 +157,18 @@ export default {
         })
     },
     chooseCategory(e) {
-      console.log(e)
+      this.$store.commit('navigation/setState', { subCategory: e })
+      this.$router.push(`/store/${this.$route.params.subcategory}/${e.Link}`)
     },
     onFileChange(e) {
       this.formModel.Image = e
     },
     onSubmit(e) {
       this.requestInProgress = true
-      this.formModel.Title = e.Title
-      this.formModel.Description = e.Description
+      this.formFields.forEach(item => {
+        this.formModel[item['prop']] = e[item['prop']]
+      })
+      this.formModel.CategoryID = this.categoryID
       if (this.actionVisible.Create) this.updateCategory(true)
       else this.updateCategory(false)
     },
@@ -205,17 +213,13 @@ export default {
     },
   },
   async mounted() {
-    // this.category = this.$store.state.navigation.category
-    if (!this.category) {
-      this.$store.dispatch('categories/getByID', this.$route.params.category)
+    if (!this.category || this.category.ID != this.$route.params.subcategory) {
+      this.$store.dispatch(
+        'categories/getByLink',
+        this.$route.params.subcategory
+      )
     }
     await this.requestData()
-    var that = this
-    // this.$store
-    //   .dispatch('subcategories/getAll', this.$route.params.category)
-    //   .then(function() {
-    //     that.listDataLoaded = true
-    //   })
   },
 }
 </script>
