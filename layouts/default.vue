@@ -37,7 +37,7 @@
       </v-navigation-drawer>
       <v-toolbar fixed app clipped-left>
         <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
-        <img width="32" src="logo.svg">
+        <img width="32" src="~/static/logo.svg">
 
         <v-toolbar-title v-text="title"></v-toolbar-title>
         <v-spacer></v-spacer>

@@ -2,7 +2,7 @@ const navigation = {
   namespaced: true,
   state: () => ({
     category: null,
-    subcategory: null,
+    subCategory: null,
   }),
   mutations: {
     setState(state, data) {
