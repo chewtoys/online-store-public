@@ -24,12 +24,12 @@
                 </v-list-tile-action>
               </v-list-tile>
               <v-list-tile router :to="nest.to" v-for="(nest, i) in item.nested" :key="i">
+                <v-list-tile-content class="nest-entry-wrap">
+                  <v-list-tile-title class="nest-entry" v-text="nest.Title"></v-list-tile-title>
+                </v-list-tile-content>
                 <v-list-tile-action>
                   <v-icon v-html="nest.Icon"></v-icon>
                 </v-list-tile-action>
-                <v-list-tile-content>
-                  <v-list-tile-title v-text="nest.Title"></v-list-tile-title>
-                </v-list-tile-content>
               </v-list-tile>
             </v-list-group>
           </v-list-group>
@@ -183,6 +183,9 @@ export default {
 <style lang="scss">
 html {
   overflow-y: auto;
+}
+.nest-entry-wrap {
+  padding-left: 5.2rem;
 }
 .app-preloader {
   align-self: center;

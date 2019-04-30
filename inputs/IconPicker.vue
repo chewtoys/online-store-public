@@ -1,12 +1,7 @@
 <template>
   <v-layout class="wrap">
     <v-flex class="part text">
-      <v-autocomplete
-        v-model="local"
-        :label="label"
-        :items="icons"
-        @change="$emit('change', local)"
-      >
+      <v-autocomplete v-model="local" :label="label" :items="icons" @change="$emit('input', local)">
         <template slot="item" slot-scope="{ item }">
           <v-list-tile-content class="row-container">
             <v-list-tile-title v-html="item"></v-list-tile-title>

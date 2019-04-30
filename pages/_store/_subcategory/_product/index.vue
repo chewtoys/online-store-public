@@ -70,13 +70,26 @@ export default {
         Link: '',
       },
       formFields: [
-        { _id: 0, label: 'Title', prop: 'Title', component: 'v-text-field' },
-        { _id: 1, label: 'Link', prop: 'Link', component: 'v-text-field' },
+        {
+          _id: 0,
+          label: 'Title',
+          prop: 'Title',
+          component: 'v-text-field',
+          rule: 'required',
+        },
+        {
+          _id: 1,
+          label: 'Link',
+          prop: 'Link',
+          component: 'v-text-field',
+          rule: 'required',
+        },
         {
           _id: 2,
           label: 'Description',
           prop: 'Description',
           component: 'v-textarea',
+          rule: 'required',
         },
         { _id: 3, label: 'Image', prop: 'ImageID', component: 'file-input' },
       ],

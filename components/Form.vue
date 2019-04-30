@@ -6,19 +6,21 @@
     @cancel="$emit('close')"
     :requestInProgress="requestInProgress"
   >
-    <v-flex xs12 v-for="field in fields" :key="field._id">
-      <component
-        :is="field.component"
-        :label="field.label"
-        v-model="localData[field.prop]"
-        :style="field.component == 'file-input' ? 'width:100%' : ''"
-        :fileGuid="field.component == 'file-input' ? localData[field.prop] : undefined"
-        :auto-grow="field.component == 'v-textarea' ? true : undefined"
-        :model="field.component == 'icon-picker' ? localData[field.prop] : undefined"
-        @fileChange="onFileChange($event)"
-        @change="onChange($event, field.prop)"
-      ></component>
-    </v-flex>
+    <v-form v-model="formValid" ref="form" class="form">
+      <v-flex xs12 v-for="field in fields" :key="field._id">
+        <component
+          :is="field.component"
+          :label="field.label"
+          :rules="getValidationRule(field.rule)"
+          v-model="localData[field.prop]"
+          :style="field.component == 'file-input' ? 'width:100%' : ''"
+          :fileGuid="field.component == 'file-input' ? localData[field.prop] : undefined"
+          :auto-grow="field.component == 'v-textarea' ? true : undefined"
+          :model="field.component == 'icon-picker' ? localData[field.prop] : undefined"
+          @fileChange="onFileChange($event)"
+        ></component>
+      </v-flex>
+    </v-form>
   </dialog-form>
 </template>
 
@@ -39,38 +41,51 @@ export default {
     show: Boolean,
     dialogTitle: String,
     requestInProgress: Boolean,
-    objModel: Object,
   },
   data: () => ({
     fileChanged: false,
     localData: {},
+    formValid: true,
   }),
   methods: {
     onFileChange(e) {
       this.$emit('fileChange', e)
     },
-    onChange(val, prop) {
-      this.localData[prop] = val
-    },
     submit() {
+      if (!this.$refs.form.validate()) return
       this.$emit('submit', this.localData)
+    },
+    getValidationRule(ruleProp) {
+      if (!ruleProp) return []
+      if (!(typeof ruleProp === 'string'))
+        throw 'Rule must me a string specified in form.vue'
+      switch (ruleProp) {
+        case 'required':
+          return [v => !!v || 'This field is required']
+          break
+        default:
+          return []
+      }
     },
   },
   watch: {
     show(oldVal, val) {
       this.localData = {}
       Object.assign(this.localData, this.model)
+      this.$refs.form.resetValidation()
     },
   },
   mounted() {
-    Object.assign(this.localData, this.model)
-    console.log(this.fields)
+    console.log('form mounted')
   },
 }
 </script>
-<style lang="css">
+<style lang="scss" scoped>
 .form-container {
   padding-top: 0;
+}
+.form {
+  width: 100%;
 }
 .form-title {
   font-weight: 400;
